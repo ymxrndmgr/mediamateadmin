@@ -213,13 +213,50 @@ body{font-family:var(--font);background:var(--bg);color:var(--dark);overflow:hid
   </div>
   <div class="g g2">
     <div class="ac"><h3>주간 가입자 추이</h3>
-      <div class="bar"><div class="bar-l">월</div><div class="bar-bg"><div class="bar-fill" style="width:55%"></div></div><div class="bar-v">312</div></div>
-      <div class="bar"><div class="bar-l">화</div><div class="bar-bg"><div class="bar-fill" style="width:45%"></div></div><div class="bar-v">256</div></div>
-      <div class="bar"><div class="bar-l">수</div><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><div class="bar-v">398</div></div>
-      <div class="bar"><div class="bar-l">목</div><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div><div class="bar-v">341</div></div>
-      <div class="bar"><div class="bar-l">금</div><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><div class="bar-v">568</div></div>
-      <div class="bar"><div class="bar-l">토</div><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><div class="bar-v">483</div></div>
-      <div class="bar"><div class="bar-l">일</div><div class="bar-bg"><div class="bar-fill" style="width:78%"></div></div><div class="bar-v">444</div></div>
+      <svg viewBox="0 0 320 140" style="width:100%;height:140px;overflow:visible;">
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--acc2)" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="var(--acc)" stop-opacity=".6"/>
+          </linearGradient>
+        </defs>
+        <!-- y grid -->
+        <line x1="30" y1="10" x2="30" y2="100" stroke="var(--border)" stroke-width="1"/>
+        <line x1="30" y1="100" x2="315" y2="100" stroke="var(--border)" stroke-width="1"/>
+        <line x1="30" y1="10" x2="315" y2="10" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="30" y1="37" x2="315" y2="37" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="30" y1="64" x2="315" y2="64" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- y labels -->
+        <text x="26" y="13" text-anchor="end" fill="var(--gray)" font-size="9">600</text>
+        <text x="26" y="40" text-anchor="end" fill="var(--gray)" font-size="9">400</text>
+        <text x="26" y="67" text-anchor="end" fill="var(--gray)" font-size="9">200</text>
+        <text x="26" y="103" text-anchor="end" fill="var(--gray)" font-size="9">0</text>
+        <!-- bars: 월312 화256 수398 목341 금568 토483 일444 -->
+        <!-- bar width=28, gap=8, start x=36 -->
+        <rect x="36"  y="48" width="28" height="52" rx="4" fill="url(#barGrad)"/>
+        <rect x="72"  y="57" width="28" height="43" rx="4" fill="url(#barGrad)"/>
+        <rect x="108" y="34" width="28" height="66" rx="4" fill="url(#barGrad)"/>
+        <rect x="144" y="43" width="28" height="57" rx="4" fill="url(#barGrad)"/>
+        <rect x="180" y="5"  width="28" height="95" rx="4" fill="var(--acc2)"/>
+        <rect x="216" y="19" width="28" height="81" rx="4" fill="url(#barGrad)"/>
+        <rect x="252" y="26" width="28" height="74" rx="4" fill="url(#barGrad)"/>
+        <!-- value labels -->
+        <text x="50"  y="44" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">312</text>
+        <text x="86"  y="53" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">256</text>
+        <text x="122" y="30" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">398</text>
+        <text x="158" y="39" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">341</text>
+        <text x="194" y="3"  text-anchor="middle" fill="var(--acc2)" font-size="8" font-weight="700">568</text>
+        <text x="230" y="15" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">483</text>
+        <text x="266" y="22" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">444</text>
+        <!-- x labels -->
+        <text x="50"  y="113" text-anchor="middle" fill="var(--gray)" font-size="10">월</text>
+        <text x="86"  y="113" text-anchor="middle" fill="var(--gray)" font-size="10">화</text>
+        <text x="122" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">수</text>
+        <text x="158" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">목</text>
+        <text x="194" y="113" text-anchor="middle" fill="var(--acc2)" font-size="10" font-weight="700">금</text>
+        <text x="230" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">토</text>
+        <text x="266" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">일</text>
+      </svg>
     </div>
     <div class="ac"><h3>KPI 달성 현황</h3>
       <div class="kpw"><div class="kpl"><span class="kpn">실증 패널 (목표 1,000명)</span><span class="kpv">620 / 1,000</span></div><div class="kpb"><div class="kpf" style="width:62%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
@@ -238,10 +275,48 @@ body{font-family:var(--font);background:var(--bg);color:var(--dark);overflow:hid
       <div class="bar"><div class="bar-l">다큐</div><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div><div class="bar-v">15%</div></div>
     </div>
     <div class="ac"><h3>플랫폼 비율</h3>
-      <div class="bar"><div class="bar-l">Netflix</div><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><div class="bar-v">52%</div></div>
-      <div class="bar"><div class="bar-l">YouTube</div><div class="bar-bg"><div class="bar-fill" style="width:67%"></div></div><div class="bar-v">35%</div></div>
-      <div class="bar"><div class="bar-l">Wavve</div><div class="bar-bg"><div class="bar-fill" style="width:19%"></div></div><div class="bar-v">10%</div></div>
-      <div class="bar"><div class="bar-l">Tving</div><div class="bar-bg"><div class="bar-fill" style="width:6%"></div></div><div class="bar-v">3%</div></div>
+      <div style="display:flex;align-items:center;gap:20px;">
+        <svg viewBox="0 0 160 160" style="width:140px;height:140px;flex-shrink:0;">
+          <defs>
+            <!-- Netflix 52% → 187.2° -->
+            <!-- YouTube 35% → 126° -->
+            <!-- Wavve 10% → 36° -->
+            <!-- Tving 3% → 10.8° -->
+          </defs>
+          <!-- 배경 원 -->
+          <circle cx="80" cy="80" r="60" fill="var(--lgray)"/>
+          <!-- Netflix 52%: 0° ~ 187.2° -->
+          <path d="M80,80 L80,20 A60,60 0 1,1 27.6,110.4 Z" fill="var(--acc)"/>
+          <!-- YouTube 35%: 187.2° ~ 313.2° -->
+          <path d="M80,80 L27.6,110.4 A60,60 0 0,1 117.6,20.2 Z" fill="#60A5FA"/>
+          <!-- Wavve 10%: 313.2° ~ 349.2° -->
+          <path d="M80,80 L117.6,20.2 A60,60 0 0,1 138.8,53.6 Z" fill="#93C5FD"/>
+          <!-- Tving 3%: 349.2° ~ 360° -->
+          <path d="M80,80 L138.8,53.6 A60,60 0 0,1 80,20 Z" fill="#BFDBFE"/>
+          <!-- 중앙 흰 원 (도넛) -->
+          <circle cx="80" cy="80" r="36" fill="white"/>
+          <text x="80" y="76" text-anchor="middle" fill="var(--dark)" font-size="12" font-weight="800">플랫폼</text>
+          <text x="80" y="91" text-anchor="middle" fill="var(--gray)" font-size="10">비율</text>
+        </svg>
+        <div style="display:flex;flex-direction:column;gap:10px;flex:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:var(--acc);flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">Netflix</span></div>
+            <span style="font-size:14px;font-weight:800;color:var(--acc);">52%</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:#60A5FA;flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">YouTube</span></div>
+            <span style="font-size:14px;font-weight:800;color:#60A5FA;">35%</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:#93C5FD;flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">Wavve</span></div>
+            <span style="font-size:14px;font-weight:800;color:#93C5FD;">10%</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:#BFDBFE;flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">Tving</span></div>
+            <span style="font-size:14px;font-weight:800;color:#BFDBFE;">3%</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
