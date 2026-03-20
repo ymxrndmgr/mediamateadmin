@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미디어친구-관리자</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --acc:#1E5FD8;      /* 메인 블루 */
+  --acc2:#2E74F0;     /* 밝은 블루 */
+  --acc-pale:#EEF4FF; /* 블루 연한 배경 */
+  --acc-mid:#D0E2FF;  /* 블루 중간 */
+  --dark:#0F1F3D;     /* 딥 네이비 텍스트 */
+  --gray:#5A6A84;
+  --lgray:#F4F7FB;
+  --border:#DDE6F5;
+  --white:#FFFFFF;
+  --card:#FFFFFF;
+  --bg:#F0F5FF;
+  --green:#16A34A;--red:#DC2626;--yellow:#D97706;--purple:#7C3AED;
+  --font:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--dark);overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{height:56px;background:var(--dark);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;box-shadow:0 2px 12px rgba(15,31,61,.18);}
+.logo{font-size:15px;font-weight:800;color:var(--white);white-space:nowrap;}
+.logo span{color:#60A5FA;}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto;flex:1;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.atab{background:none;border:none;color:rgba(255,255,255,.45);font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s;}
+.atab:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);}
+.atab.active{background:var(--acc2);color:var(--white);}
+
+/* BODY */
+.abody{flex:1;overflow-y:auto;padding:22px 26px;}
+.abody::-webkit-scrollbar{width:5px;}
+.abody::-webkit-scrollbar-thumb{background:var(--acc-mid);border-radius:3px;}
+.apage{display:none;animation:fadeIn .2s ease;}
+.apage.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* LAYOUT */
+.sec-title{font-size:20px;font-weight:800;color:var(--dark);margin-bottom:16px;}
+.sub{font-size:11px;font-weight:700;color:var(--gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:.7px;}
+.g{display:grid;gap:12px;margin-bottom:12px;}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:1fr 1fr;}
+.g21{grid-template-columns:2fr 1fr;}
+.g12{grid-template-columns:1fr 2fr;}
+
+/* CARDS */
+.ac{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(30,95,216,.07);}
+.ac h3{font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px;}
+.kpi{font-size:30px;font-weight:800;color:var(--dark);}
+.kpi-sub{font-size:12px;color:var(--gray);margin-top:3px;}
+.kb{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;margin-top:6px;}
+.up{background:#DCFCE7;color:var(--green);}
+.dn{background:#FEE2E2;color:var(--red);}
+.wn{background:#FEF3C7;color:var(--yellow);}
+.abo{background:var(--acc-pale);color:var(--acc);}
+.abb{background:#EDE9FE;color:var(--purple);}
+
+/* BARS */
+.bar{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.bar-l{font-size:11px;color:var(--gray);width:68px;flex-shrink:0;text-align:right;}
+.bar-bg{flex:1;height:7px;background:var(--lgray);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#60A5FA,var(--acc));}
+.bar-v{font-size:11px;color:var(--gray);width:34px;flex-shrink:0;}
+
+/* KPI PROGRESS */
+.kpw{margin-bottom:9px;}
+.kpl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.kpn{color:var(--gray);}
+.kpv{color:var(--dark);font-weight:700;}
+.kpb{height:7px;background:var(--lgray);border-radius:5px;overflow:hidden;}
+.kpf{height:100%;border-radius:5px;}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;padding:8px 10px;background:var(--lgray);color:var(--gray);font-weight:700;font-size:11px;}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--dark);vertical-align:middle;}
+.tbl tr{cursor:pointer;}.tbl tr:hover td{background:var(--acc-pale);}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#93C5FD,var(--acc));display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);}
+.ab{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+.abg{background:#DCFCE7;color:var(--green);}
+.aby{background:#FEF3C7;color:var(--yellow);}
+.abo2{background:var(--acc-pale);color:var(--acc);}
+.abb2{background:#EDE9FE;color:var(--purple);}
+.abr{background:#FEE2E2;color:var(--red);}
+
+/* USER DETAIL */
+.itabs{display:flex;gap:6px;margin-bottom:14px;}
+.itab{padding:7px 16px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:var(--white);color:var(--gray);font-family:var(--font);transition:all .15s;}
+.itab:hover{border-color:var(--acc);color:var(--acc);}
+.itab.active{background:var(--acc);color:var(--white);border-color:var(--acc);}
+.back-btn{background:var(--lgray);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;font-family:var(--font);color:var(--gray);}
+.back-btn:hover{background:var(--acc-pale);color:var(--acc);}
+.u-hdr{display:flex;align-items:center;gap:16px;background:var(--card);border-radius:14px;padding:18px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(30,95,216,.07);}
+.u-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#93C5FD,var(--acc));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:var(--white);font-weight:800;}
+.u-name{font-size:18px;font-weight:800;color:var(--dark);}
+.u-meta{font-size:12px;color:var(--gray);margin-top:3px;}
+
+/* HEATMAP */
+.hm-0{background:var(--lgray);}
+.hm-1{background:#BFDBFE;}
+.hm-2{background:#60A5FA;}
+.hm-3{background:#2563EB;}
+.hm-4{background:var(--dark);}
+
+/* TIMELINE */
+.tl{display:flex;gap:10px;margin-bottom:12px;}
+.tl-dot{display:flex;flex-direction:column;align-items:center;}
+.tl-c{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.tl-c.done{background:var(--green);}
+.tl-c.cur{background:var(--acc2);}
+.tl-c.fut{background:var(--border);}
+.tl-ln{width:2px;flex:1;background:var(--border);margin-top:3px;}
+.tl-body{flex:1;background:var(--lgray);border-radius:9px;padding:10px 13px;border:1px solid var(--border);}
+.tl-lbl{font-size:10px;color:var(--gray);margin-bottom:3px;}
+.tl-ttl{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:3px;}
+.tl-desc{font-size:11px;color:var(--gray);line-height:1.6;}
+
+/* GATE */
+.gate{background:var(--acc-pale);border:1px solid var(--acc-mid);border-radius:10px;padding:13px;margin-bottom:9px;}
+.gate-ttl{font-size:12px;font-weight:700;color:var(--acc);margin-bottom:3px;}
+.gate-desc{font-size:11px;color:var(--gray);line-height:1.6;}
+
+/* RISK */
+.risk{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.risk-lv{width:40px;flex-shrink:0;text-align:center;padding:2px 0;border-radius:5px;font-size:10px;font-weight:700;}
+.risk-t{font-size:12px;font-weight:600;color:var(--dark);}
+.risk-a{font-size:11px;color:var(--gray);margin-top:2px;}
+
+/* GFLOW */
+.gflow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:9px 0;}
+.gfbox{background:var(--lgray);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:var(--gray);}
+.gfarr{color:var(--gray);font-size:14px;}
+.gfhl{background:var(--acc-pale);border-color:var(--acc-mid);color:var(--acc);}
+.gfbl{background:#FEE2E2;border-color:#FECACA;color:var(--red);}
+
+/* SERVER */
+.srv{background:var(--lgray);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:9px;}
+.srv-hdr{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.srv-icon{width:32px;height:32px;border-radius:7px;background:var(--acc-pale);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.smet{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.sm{background:var(--white);border-radius:7px;padding:8px;text-align:center;border:1px solid var(--border);}
+.sm-n{font-size:14px;font-weight:800;color:var(--dark);}
+.sm-l{font-size:10px;color:var(--gray);margin-top:2px;}
+
+/* LOG */
+.log{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.log-t{color:var(--gray);width:76px;flex-shrink:0;}
+.log-lv{width:44px;flex-shrink:0;text-align:center;padding:1px 0;border-radius:4px;font-size:10px;font-weight:700;}
+.log-m{color:var(--dark);flex:1;}
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;}
+.dg{background:#16A34A;}.dy{background:#D97706;}.dr{background:#DC2626;}
+
+/* SEC CTRL */
+.sctrl{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.sc-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sc-t{font-size:12px;font-weight:700;color:var(--dark);}
+.sc-d{font-size:11px;color:var(--gray);line-height:1.6;margin-top:2px;}
+
+/* CHAT LOG */
+.clog{padding:10px 0;border-bottom:1px solid var(--border);}
+.clog-who{font-size:10px;font-weight:700;margin-bottom:3px;}
+.clog-msg{font-size:12px;line-height:1.6;color:var(--dark);}
+.clog-tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;margin:2px 2px 0 0;font-weight:600;}
+
+/* SVG CHARTS */
+.chart-svg{width:100%;overflow:visible;}
+
+/* DEMO */
+.ademo-ov{display:none;position:fixed;inset:0;background:rgba(15,31,61,.4);z-index:200;}
+.ademo-hl{position:fixed;border:3px solid #2563EB;border-radius:10px;pointer-events:none;opacity:0;box-shadow:0 0 0 5px rgba(37,99,235,.2),0 0 20px rgba(37,99,235,.35);transition:all .4s ease;z-index:201;}
+.ademo-card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:20px 22px;width:440px;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);box-shadow:0 16px 48px rgba(15,31,61,.18);z-index:202;transition:top .4s,bottom .4s;}
+.ademo-robot{width:36px;height:36px;background:var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ademo-txt{font-size:13px;line-height:1.75;color:var(--dark);min-height:64px;transition:opacity .3s;}
+.ademo-track{margin-top:12px;height:8px;background:var(--lgray);border-radius:9px;overflow:hidden;cursor:pointer;}
+.ademo-fill{height:100%;background:linear-gradient(90deg,#60A5FA,var(--acc));border-radius:9px;width:0%;transition:width .2s linear;pointer-events:none;}
+.ademo-timer{text-align:right;font-size:10px;color:var(--gray);margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">미디어<span>●</span>친구 <span style="font-size:10px;color:rgba(255,255,255,.22);font-weight:400;margin-left:4px;">ADMIN</span></div>
+  <div class="nav-tabs">
+    <button class="atab active" onclick="aTab('dashboard')">📊 대시보드</button>
+    <button class="atab" onclick="aTab('panel')">👥 패널 현황</button>
+    <button class="atab" onclick="aTab('rolling')">🔄 롤링플랜</button>
+    <button class="atab" onclick="aTab('moving')">🎯 무빙타겟</button>
+    <button class="atab" onclick="aTab('privacy')">🔐 프라이버시게이트</button>
+    <button class="atab" onclick="aTab('server')">🖥️ 서버·RAG</button>
+    <button class="atab" onclick="aTab('security')">🛡️ 보안조치</button>
+    <button class="atab" onclick="aTab('users')">🙍 사용자</button>
+    <button class="atab" onclick="aTab('content')">🎬 콘텐츠분석</button>
+    <button class="atab" onclick="aTab('ademo')">🎮 데모</button>
+  </div>
+</div>
+<div class="abody">
+
+<!-- ===== DASHBOARD ===== -->
+<div class="apage active" id="apage-dashboard">
+  <div class="sec-title">📊 대시보드</div>
+  <div class="g g4">
+    <div class="ac"><h3>전체 사용자</h3><div class="kpi">8,412</div><div class="kpi-sub">가입자 수</div><span class="kb up">▲ 12.4% 이번 달</span></div>
+    <div class="ac"><h3>DAU</h3><div class="kpi">2,187</div><div class="kpi-sub">일일 활성</div><span class="kb up">▲ 8.1%</span></div>
+    <div class="ac"><h3>AI 대화 건수</h3><div class="kpi">14,320</div><div class="kpi-sub">오늘 누적</div><span class="kb up">▲ 23.6%</span></div>
+    <div class="ac"><h3>추천 채택률</h3><div class="kpi">68<span style="font-size:16px;color:rgba(255,255,255,.3);">%</span></div><div class="kpi-sub">AI→실시청</div><span class="kb up">▲ 5.2%</span></div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>주간 가입자 추이</h3>
+      <svg viewBox="0 0 320 140" style="width:100%;height:140px;overflow:visible;">
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--acc2)" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="var(--acc)" stop-opacity=".6"/>
+          </linearGradient>
+        </defs>
+        <!-- y grid -->
+        <line x1="30" y1="10" x2="30" y2="100" stroke="var(--border)" stroke-width="1"/>
+        <line x1="30" y1="100" x2="315" y2="100" stroke="var(--border)" stroke-width="1"/>
+        <line x1="30" y1="10" x2="315" y2="10" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="30" y1="37" x2="315" y2="37" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="30" y1="64" x2="315" y2="64" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- y labels -->
+        <text x="26" y="13" text-anchor="end" fill="var(--gray)" font-size="9">600</text>
+        <text x="26" y="40" text-anchor="end" fill="var(--gray)" font-size="9">400</text>
+        <text x="26" y="67" text-anchor="end" fill="var(--gray)" font-size="9">200</text>
+        <text x="26" y="103" text-anchor="end" fill="var(--gray)" font-size="9">0</text>
+        <!-- bars: 월312 화256 수398 목341 금568 토483 일444 -->
+        <!-- bar width=28, gap=8, start x=36 -->
+        <rect x="36"  y="48" width="28" height="52" rx="4" fill="url(#barGrad)"/>
+        <rect x="72"  y="57" width="28" height="43" rx="4" fill="url(#barGrad)"/>
+        <rect x="108" y="34" width="28" height="66" rx="4" fill="url(#barGrad)"/>
+        <rect x="144" y="43" width="28" height="57" rx="4" fill="url(#barGrad)"/>
+        <rect x="180" y="5"  width="28" height="95" rx="4" fill="var(--acc2)"/>
+        <rect x="216" y="19" width="28" height="81" rx="4" fill="url(#barGrad)"/>
+        <rect x="252" y="26" width="28" height="74" rx="4" fill="url(#barGrad)"/>
+        <!-- value labels -->
+        <text x="50"  y="44" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">312</text>
+        <text x="86"  y="53" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">256</text>
+        <text x="122" y="30" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">398</text>
+        <text x="158" y="39" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">341</text>
+        <text x="194" y="3"  text-anchor="middle" fill="var(--acc2)" font-size="8" font-weight="700">568</text>
+        <text x="230" y="15" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">483</text>
+        <text x="266" y="22" text-anchor="middle" fill="var(--acc)" font-size="8" font-weight="700">444</text>
+        <!-- x labels -->
+        <text x="50"  y="113" text-anchor="middle" fill="var(--gray)" font-size="10">월</text>
+        <text x="86"  y="113" text-anchor="middle" fill="var(--gray)" font-size="10">화</text>
+        <text x="122" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">수</text>
+        <text x="158" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">목</text>
+        <text x="194" y="113" text-anchor="middle" fill="var(--acc2)" font-size="10" font-weight="700">금</text>
+        <text x="230" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">토</text>
+        <text x="266" y="113" text-anchor="middle" fill="var(--gray)" font-size="10">일</text>
+      </svg>
+    </div>
+    <div class="ac"><h3>KPI 달성 현황</h3>
+      <div class="kpw"><div class="kpl"><span class="kpn">실증 패널 (목표 1,000명)</span><span class="kpv">620 / 1,000</span></div><div class="kpb"><div class="kpf" style="width:62%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">MOS 목표 (4.5)</span><span class="kpv">4.2 / 4.5</span></div><div class="kpb"><div class="kpf" style="width:93%;background:linear-gradient(90deg,#F39C12,#F1C40F);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">추천 채택률 (목표 70%)</span><span class="kpv">68%</span></div><div class="kpb"><div class="kpf" style="width:97%;background:linear-gradient(90deg,var(--pl),var(--aaccent));"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">미션 완수율 (목표 80%)</span><span class="kpv">74%</span></div><div class="kpb"><div class="kpf" style="width:92%;background:linear-gradient(90deg,#9B59B6,#8E44AD);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">비식별 재현율 검증</span><span class="kpv">완료 ✓</span></div><div class="kpb"><div class="kpf" style="width:100%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+    </div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>선호 장르 TOP 5</h3>
+      <div class="bar"><div class="bar-l">요리/먹방</div><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><div class="bar-v">38%</div></div>
+      <div class="bar"><div class="bar-l">스릴러</div><div class="bar-bg"><div class="bar-fill" style="width:82%"></div></div><div class="bar-v">31%</div></div>
+      <div class="bar"><div class="bar-l">경제/시사</div><div class="bar-bg"><div class="bar-fill" style="width:68%"></div></div><div class="bar-v">26%</div></div>
+      <div class="bar"><div class="bar-l">여행</div><div class="bar-bg"><div class="bar-fill" style="width:55%"></div></div><div class="bar-v">21%</div></div>
+      <div class="bar"><div class="bar-l">다큐</div><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div><div class="bar-v">15%</div></div>
+    </div>
+    <div class="ac"><h3>플랫폼 비율</h3>
+      <div style="display:flex;align-items:center;gap:20px;">
+        <svg viewBox="0 0 160 160" style="width:140px;height:140px;flex-shrink:0;">
+          <defs>
+            <!-- Netflix 52% → 187.2° -->
+            <!-- YouTube 35% → 126° -->
+            <!-- Wavve 10% → 36° -->
+            <!-- Tving 3% → 10.8° -->
+          </defs>
+          <!-- 배경 원 -->
+          <circle cx="80" cy="80" r="60" fill="var(--lgray)"/>
+          <!-- Netflix 52%: 0° ~ 187.2° -->
+          <path d="M80,80 L80,20 A60,60 0 1,1 27.6,110.4 Z" fill="var(--acc)"/>
+          <!-- YouTube 35%: 187.2° ~ 313.2° -->
+          <path d="M80,80 L27.6,110.4 A60,60 0 0,1 117.6,20.2 Z" fill="#60A5FA"/>
+          <!-- Wavve 10%: 313.2° ~ 349.2° -->
+          <path d="M80,80 L117.6,20.2 A60,60 0 0,1 138.8,53.6 Z" fill="#93C5FD"/>
+          <!-- Tving 3%: 349.2° ~ 360° -->
+          <path d="M80,80 L138.8,53.6 A60,60 0 0,1 80,20 Z" fill="#BFDBFE"/>
+          <!-- 중앙 흰 원 (도넛) -->
+          <circle cx="80" cy="80" r="36" fill="white"/>
+          <text x="80" y="76" text-anchor="middle" fill="var(--dark)" font-size="12" font-weight="800">플랫폼</text>
+          <text x="80" y="91" text-anchor="middle" fill="var(--gray)" font-size="10">비율</text>
+        </svg>
+        <div style="display:flex;flex-direction:column;gap:10px;flex:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:var(--acc);flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">Netflix</span></div>
+            <span style="font-size:14px;font-weight:800;color:var(--acc);">52%</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:#60A5FA;flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">YouTube</span></div>
+            <span style="font-size:14px;font-weight:800;color:#60A5FA;">35%</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:#93C5FD;flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">Wavve</span></div>
+            <span style="font-size:14px;font-weight:800;color:#93C5FD;">10%</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:7px;"><div style="width:12px;height:12px;border-radius:3px;background:#BFDBFE;flex-shrink:0;"></div><span style="font-size:13px;color:var(--dark);">Tving</span></div>
+            <span style="font-size:14px;font-weight:800;color:#BFDBFE;">3%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANEL ===== -->
+<div class="apage" id="apage-panel">
+  <div class="sec-title">👥 패널 현황 (1,000명 실증)</div>
+  <div class="g g4">
+    <div class="ac"><h3>모집 현황</h3><div class="kpi">620<span style="font-size:16px;color:rgba(255,255,255,.3);">/1,000</span></div><div class="kpi-sub">확보율 62%</div><span class="kb wn">목표 대비 -38%</span></div>
+    <div class="ac"><h3>오늘 활성 패널</h3><div class="kpi">438</div><div class="kpi-sub">오늘 기록 제출</div><span class="kb up">70.6%</span></div>
+    <div class="ac"><h3>미션 완수율</h3><div class="kpi">74<span style="font-size:16px;color:rgba(255,255,255,.3);">%</span></div><div class="kpi-sub">주간 미션 기준</div><span class="kb wn">목표 80% 미달</span></div>
+    <div class="ac"><h3>평균 기록 건수</h3><div class="kpi">8.3<span style="font-size:16px;color:rgba(255,255,255,.3);">/주</span></div><div class="kpi-sub">패널 1인당</div><span class="kb up">▲ 0.4건</span></div>
+  </div>
+
+  <!-- 7주 활동 히트맵 -->
+  <div class="g g2">
+    <div class="ac"><h3>주간 패널 활동 히트맵 (최근 7주)</h3>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <div style="width:32px;"></div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">월</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">화</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">수</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">목</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">금</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">토</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;">일</div>
+        </div>
+      </div>
+      <div id="heatmap-rows"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:8px;">
+        <span style="font-size:10px;color:rgba(255,255,255,.3);">적음</span>
+        <div style="width:12px;height:12px;border-radius:3px;" class="hm-0"></div>
+        <div style="width:12px;height:12px;border-radius:3px;" class="hm-1"></div>
+        <div style="width:12px;height:12px;border-radius:3px;" class="hm-2"></div>
+        <div style="width:12px;height:12px;border-radius:3px;" class="hm-3"></div>
+        <div style="width:12px;height:12px;border-radius:3px;" class="hm-4"></div>
+        <span style="font-size:10px;color:rgba(255,255,255,.3);">많음</span>
+      </div>
+    </div>
+    <div class="ac"><h3>패널 상태 분포</h3>
+      <div style="margin-bottom:12px;">
+        <svg viewBox="0 0 200 120" class="chart-svg" style="height:120px;">
+          <!-- 스택 바 차트 -->
+          <rect x="10" y="20" width="75" height="24" rx="4" fill="#2ECC71" opacity=".85"/>
+          <text x="50" y="36" text-anchor="middle" fill="white" font-size="11" font-weight="700">활성 438명</text>
+          <rect x="10" y="50" width="46" height="24" rx="4" fill="#F39C12" opacity=".85"/>
+          <text x="33" y="66" text-anchor="middle" fill="white" font-size="11" font-weight="700">슬리핑 182</text>
+          <rect x="10" y="80" width="15" height="24" rx="4" fill="#E74C3C" opacity=".75"/>
+          <text x="75" y="96" fill="rgba(255,255,255,.6)" font-size="10">이탈 57</text>
+          <!-- 도넛 -->
+          <circle cx="160" cy="60" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="18"/>
+          <circle cx="160" cy="60" r="46" fill="none" stroke="#2ECC71" stroke-width="18" stroke-dasharray="180 109" stroke-dashoffset="23" opacity=".85"/>
+          <circle cx="160" cy="60" r="46" fill="none" stroke="#F39C12" stroke-width="18" stroke-dasharray="111 178" stroke-dashoffset="-157" opacity=".75"/>
+          <circle cx="160" cy="60" r="46" fill="none" stroke="#E74C3C" stroke-width="18" stroke-dasharray="36 253" stroke-dashoffset="-268" opacity=".7"/>
+          <text x="160" y="56" text-anchor="middle" fill="white" font-size="13" font-weight="800">620</text>
+          <text x="160" y="70" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="10">패널</text>
+        </svg>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><div style="width:9px;height:9px;border-radius:50%;background:#2ECC71;"></div><span style="color:rgba(255,255,255,.55);">활성 70.6%</span></div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><div style="width:9px;height:9px;border-radius:50%;background:#F39C12;"></div><span style="color:rgba(255,255,255,.55);">슬리핑 29.4%</span></div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><div style="width:9px;height:9px;border-radius:50%;background:#E74C3C;"></div><span style="color:rgba(255,255,255,.55);">이탈 9.2%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 미션 현황 -->
+  <div class="g g2">
+    <div class="ac"><h3>📋 주간 미션 완수 현황</h3>
+      <table class="tbl">
+        <thead><tr><th>미션</th><th>목표</th><th>완수</th><th>완수율</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td>시청 기록 매일 1건</td><td>620명</td><td>512명</td><td>82.6%</td><td><span class="ab abg">양호</span></td></tr>
+          <tr><td>AI Think Aloud 3회/주</td><td>620명</td><td>389명</td><td>62.7%</td><td><span class="ab aby">주의</span></td></tr>
+          <tr><td>플랫폼 기록 업로드</td><td>620명</td><td>298명</td><td>48.1%</td><td><span class="ab abr">미달</span></td></tr>
+          <tr><td>별점/후기 작성</td><td>620명</td><td>541명</td><td>87.3%</td><td><span class="ab abg">양호</span></td></tr>
+          <tr><td>성향 퀴즈 완료</td><td>620명</td><td>601명</td><td>96.9%</td><td><span class="ab abg">우수</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ac"><h3>📅 일별 기록 추이 (최근 14일)</h3>
+      <svg viewBox="0 0 320 130" class="chart-svg" style="height:130px;">
+        <!-- grid -->
+        <line x1="30" y1="10" x2="30" y2="100" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        <line x1="30" y1="100" x2="315" y2="100" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+        <!-- y labels -->
+        <text x="25" y="14" text-anchor="end" fill="rgba(255,255,255,.3)" font-size="9">600</text>
+        <text x="25" y="38" text-anchor="end" fill="rgba(255,255,255,.3)" font-size="9">450</text>
+        <text x="25" y="62" text-anchor="end" fill="rgba(255,255,255,.3)" font-size="9">300</text>
+        <text x="25" y="86" text-anchor="end" fill="rgba(255,255,255,.3)" font-size="9">150</text>
+        <!-- grid lines -->
+        <line x1="30" y1="25" x2="315" y2="25" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="30" y1="50" x2="315" y2="50" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="30" y1="75" x2="315" y2="75" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- area fill -->
+        <path d="M35,78 L55,65 L75,72 L95,60 L115,55 L135,68 L155,52 L175,48 L195,42 L215,35 L235,40 L255,30 L275,28 L295,22 L295,100 L35,100 Z" fill="url(#agrad)" opacity=".25"/>
+        <!-- line -->
+        <polyline points="35,78 55,65 75,72 95,60 115,55 135,68 155,52 175,48 195,42 215,35 235,40 255,30 275,28 295,22" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>
+        <!-- dots -->
+        <circle cx="35" cy="78" r="3" fill="var(--acc)"/>
+        <circle cx="55" cy="65" r="3" fill="var(--acc)"/>
+        <circle cx="75" cy="72" r="3" fill="var(--acc)"/>
+        <circle cx="95" cy="60" r="3" fill="var(--acc)"/>
+        <circle cx="115" cy="55" r="3" fill="var(--acc)"/>
+        <circle cx="135" cy="68" r="3" fill="var(--acc)"/>
+        <circle cx="155" cy="52" r="3" fill="var(--acc)"/>
+        <circle cx="175" cy="48" r="3" fill="var(--acc)"/>
+        <circle cx="195" cy="42" r="3" fill="var(--acc)"/>
+        <circle cx="215" cy="35" r="3" fill="var(--acc)"/>
+        <circle cx="235" cy="40" r="3" fill="var(--acc)"/>
+        <circle cx="255" cy="30" r="3" fill="var(--acc)"/>
+        <circle cx="275" cy="28" r="3" fill="var(--acc)"/>
+        <circle cx="295" cy="22" r="3" fill="var(--green)"/>
+        <!-- x labels -->
+        <text x="35" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/3</text>
+        <text x="75" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/5</text>
+        <text x="115" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/7</text>
+        <text x="155" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/9</text>
+        <text x="195" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/11</text>
+        <text x="235" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/13</text>
+        <text x="275" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/15</text>
+        <text x="295" y="112" text-anchor="middle" fill="var(--gray)" font-size="8">6/16</text>
+        <defs><linearGradient id="agrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--acc)" stop-opacity=".7"/><stop offset="100%" stop-color="var(--acc)" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+      <div style="font-size:11px;color:rgba(255,255,255,.35);text-align:right;">↑ 오늘 438건 기록 (역대 최고)</div>
+    </div>
+  </div>
+
+  <!-- 패널 개인별 현황 -->
+  <div class="ac"><h3>🔍 패널 개인별 미션 달성 현황 (TOP 10 & 하위 5)</h3>
+    <table class="tbl">
+      <thead><tr><th>패널 ID</th><th>이름</th><th>시청기록</th><th>AI 대화</th><th>업로드</th><th>별점</th><th>이번 주 포인트</th><th>미션 달성</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td>P-0001</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="av">지</div>김지민</div></td><td>7건 ✓</td><td>12회 ✓</td><td>2건 ✓</td><td>7개 ✓</td><td style="color:var(--aaccent);font-weight:700;">+380P</td><td><div style="width:80px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;"><div style="width:98%;height:100%;background:#2ECC71;border-radius:4px;"></div></div></td><td><span class="ab abg">우수</span></td></tr>
+        <tr><td>P-0002</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="av" style="background:linear-gradient(135deg,#C2DAFF,#3498DB);">수</div>박수현</div></td><td>6건 ✓</td><td>9회 ✓</td><td>1건 ✓</td><td>6개 ✓</td><td style="color:var(--aaccent);font-weight:700;">+310P</td><td><div style="width:80px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;"><div style="width:88%;height:100%;background:#2ECC71;border-radius:4px;"></div></div></td><td><span class="ab abg">양호</span></td></tr>
+        <tr><td>P-0003</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="av" style="background:linear-gradient(135deg,#C2FFC2,#27AE60);">준</div>이준호</div></td><td>5건 ✓</td><td>4회</td><td>0건</td><td>5개 ✓</td><td style="color:var(--aaccent);font-weight:700;">+220P</td><td><div style="width:80px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;"><div style="width:68%;height:100%;background:#F39C12;border-radius:4px;"></div></div></td><td><span class="ab aby">보통</span></td></tr>
+        <tr><td>P-0004</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="av" style="background:linear-gradient(135deg,#FFE0C2,#E67E22);">미</div>최미래</div></td><td>7건 ✓</td><td>14회 ✓</td><td>3건 ✓</td><td>7개 ✓</td><td style="color:var(--aaccent);font-weight:700;">+420P</td><td><div style="width:80px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#2ECC71;border-radius:4px;"></div></div></td><td><span class="ab abg">우수</span></td></tr>
+        <tr><td>P-0005</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="av" style="background:linear-gradient(135deg,#E8C2FF,#9B59B6);">태</div>정태양</div></td><td>4건</td><td>3회</td><td>0건</td><td>3개</td><td style="color:var(--aaccent);font-weight:700;">+140P</td><td><div style="width:80px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;"><div style="width:40%;height:100%;background:#E74C3C;border-radius:4px;"></div></div></td><td><span class="ab abr">저조</span></td></tr>
+        <tr style="opacity:.6;"><td>P-0616</td><td><div style="display:flex;align-items:center;gap:6px;"><div class="av" style="background:linear-gradient(135deg,#ccc,#999);">이</div>이하위</div></td><td>1건</td><td>0회</td><td>0건</td><td>0개</td><td>+20P</td><td><div style="width:80px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;"><div style="width:8%;height:100%;background:#E74C3C;border-radius:4px;"></div></div></td><td><span class="ab abr">이탈위험</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== ROLLING PLAN ===== -->
+<div class="apage" id="apage-rolling">
+  <div class="sec-title">🔄 롤링 플랜 (Rolling Plan)</div>
+  <div class="g g2">
+    <div class="ac"><h3>현재 연차 / 분기</h3><div class="kpi" style="font-size:24px;">1차년도 Q1</div><div class="kpi-sub">'26.04 ~ '26.06</div><span class="kb up">진행 중</span></div>
+    <div class="ac"><h3>다음 Quarterly Review</h3><div class="kpi" style="font-size:21px;">2026.07.01</div><div class="kpi-sub">Steering Committee</div><span class="kb wn">D-34</span></div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>연차별 계획 타임라인</h3>
+      <div class="tl"><div class="tl-dot"><div class="tl-c done"></div><div class="tl-ln"></div></div><div class="tl-body"><div class="tl-lbl">1차년도 · '26.04~'26.12 (9개월)</div><div class="tl-ttl">기반 구축 & MVP</div><div class="tl-desc">데이터 스키마 v1 · AI Agent MVP v0.1 · 내부 테스트 20명 · Privacy Gate v1</div></div></div>
+      <div class="tl"><div class="tl-dot"><div class="tl-c cur"></div><div class="tl-ln"></div></div><div class="tl-body"><div class="tl-lbl">2차년도 · '27.01~'27.12 (12개월)</div><div class="tl-ttl">실증 확대 & 고도화</div><div class="tl-desc">중간 실증 200명 MOS 측정 · API/SDK v0.9 · Go/No-Go 통과 후 1,000명 확대</div></div></div>
+      <div class="tl" style="margin-bottom:0;"><div class="tl-dot"><div class="tl-c fut"></div></div><div class="tl-body"><div class="tl-lbl">3차년도 · '28.01~'28.12 (R&D 5M + 사업화 7M)</div><div class="tl-ttl">최종 실증 & 사업화</div><div class="tl-desc">패널 1,000명 MOS≥4.5 · 사업화 분리 · 평가집단 ≥20명</div></div></div>
+    </div>
+    <div class="ac">
+      <h3>분기별 변경이력</h3>
+      <table class="tbl" style="margin-bottom:14px;"><thead><tr><th>분기</th><th>변경항목</th><th>사유</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td>'26 Q1</td><td>데이터 수집 범위 조정</td><td>플랫폼 정책 변경</td><td><span class="ab abg">확정</span></td></tr>
+        <tr><td>'26 Q1</td><td>외부 LLM 연동 대상 변경</td><td>비용/정책 변화</td><td><span class="ab abg">확정</span></td></tr>
+        <tr><td>'26 Q2</td><td>실증 패널 모집 방식 보완</td><td>30% 지연</td><td><span class="ab aby">검토중</span></td></tr>
+        <tr><td>'26 Q2</td><td>Privacy Gate v1 범위 확대</td><td>규제 강화 대응</td><td><span class="ab aby">검토중</span></td></tr>
+      </tbody></table>
+      <div class="sub">거버넌스 3층 구조</div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="background:var(--acc-pale);border:1.5px solid var(--acc-mid);border-radius:9px;padding:9px 12px;"><div style="font-size:12px;font-weight:700;color:var(--acc);">Steering Committee (월 1회)</div><div style="font-size:11px;color:var(--gray);margin-top:2px;">기관장/PM · 일정·예산·리스크 · Rolling Plan 승인</div></div>
+        <div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:9px;padding:9px 12px;"><div style="font-size:12px;font-weight:700;color:var(--green);">Tech WG (주 1회)</div><div style="font-size:11px;color:var(--gray);margin-top:2px;">데이터/모델/플랫폼/보안 기술 이슈 해소</div></div>
+        <div style="background:#EDE9FE;border:1.5px solid #DDD6FE;border-radius:9px;padding:9px 12px;"><div style="font-size:12px;font-weight:700;color:var(--purple);">Privacy & Security Board (분기 1회)</div><div style="font-size:11px;color:var(--gray);margin-top:2px;">비식별·외부연동 점검 · 삭제·회수 정책 · IRB 자문</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ac"><h3>주요 릴리즈 게이트 (마일스톤)</h3>
+    <div class="gate"><div class="gate-ttl">◆ Privacy Gate v1 — 외부 API/모델 연동 허용 조건</div><div class="gate-desc">직접 식별정보·원문 로그·원본 미디어 외부 전달 차단 검증 완료. 담당: 하이젠 주도 + 전기관 참여.</div><span class="ab abg" style="margin-top:6px;display:inline-block;">통과 '26.09</span></div>
+    <div class="gate"><div class="gate-ttl">◆ 중간 실증 Go/No-Go — 200명, MOS/리텐션 기준 충족</div><div class="gate-desc">MOS ≥ 4.2, 2주 리텐션 ≥ 60% 달성 시 1,000명 확대 승인.</div><span class="ab aby" style="margin-top:6px;display:inline-block;">예정 '27.06</span></div>
+    <div class="gate" style="margin-bottom:0;"><div class="gate-ttl">◆ 최종 실증 — 1,000명 MOS ≥ 4.5, 평가집단 ≥ 20명</div><div class="gate-desc">평가집단 독립 검증 + 비식별 재현율 검증 + 사업화 전환 조건.</div><span class="ab abb2" style="margin-top:6px;display:inline-block;">예정 '28.05</span></div>
+  </div>
+</div>
+
+<!-- ===== MOVING TARGET ===== -->
+<div class="apage" id="apage-moving">
+  <div class="sec-title">🎯 무빙 타겟 (Moving Target)</div>
+  <div class="g g3">
+    <div class="ac"><h3>외부 환경 변화 감지</h3><div class="kpi" style="font-size:24px;">4건</div><div class="kpi-sub">이번 분기</div><span class="kb wn">대응 검토 중</span></div>
+    <div class="ac"><h3>목표 최적화 횟수</h3><div class="kpi" style="font-size:24px;">2회</div><div class="kpi-sub">분기 누적</div><span class="kb up">정상 범위</span></div>
+    <div class="ac"><h3>KPI 조정 항목</h3><div class="kpi" style="font-size:24px;">1건</div><div class="kpi-sub">패널 확대 일정 조정</div><span class="kb wn">SC 승인 대기</span></div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>외부 환경 변화 목록</h3>
+      <div class="risk"><div class="risk-lv" style="background:rgba(231,76,60,.15);color:#E74C3C;">HIGH</div><div><div class="risk-t">플랫폼 정책 변경 (Netflix API)</div><div class="risk-a">→ 자체 업로드 방식 전환, 연동 범위 재정의</div></div></div>
+      <div class="risk"><div class="risk-lv" style="background:rgba(243,156,18,.15);color:#F39C12;">MID</div><div><div class="risk-t">외부 LLM 비용 급등 (GPT-5급)</div><div class="risk-a">→ 온디바이스 소형 모델 비중 확대</div></div></div>
+      <div class="risk"><div class="risk-lv" style="background:rgba(243,156,18,.15);color:#F39C12;">MID</div><div><div class="risk-t">개인정보 보호법 강화</div><div class="risk-a">→ Privacy Gate 범위 확대, IRB 자문 요청</div></div></div>
+      <div class="risk" style="border:none;"><div class="risk-lv" style="background:rgba(52,152,219,.15);color:#3498DB;">LOW</div><div><div class="risk-t">단말 성능 변화 (온디바이스 AI 확산)</div><div class="risk-a">→ 기회: 온디바이스 처리 비중 조기 확대</div></div></div>
+    </div>
+    <div class="ac"><h3>변경관리 산출물</h3>
+      <table class="tbl"><thead><tr><th>산출물</th><th>버전</th><th>수정일</th><th>담당</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td>Rolling Plan 변경이력서</td><td>v1.2</td><td>'26.06.01</td><td>PM</td><td><span class="ab abg">최신</span></td></tr>
+        <tr><td>릴리즈 게이트 체크리스트</td><td>v1.1</td><td>'26.05.20</td><td>하이젠</td><td><span class="ab abg">최신</span></td></tr>
+        <tr><td>KPI 재정의 의사결정 문서</td><td>v1.0</td><td>'26.05.15</td><td>SC</td><td><span class="ab aby">갱신 필요</span></td></tr>
+        <tr><td>Moving Target 감지 로그</td><td>v1.3</td><td>'26.06.05</td><td>Tech WG</td><td><span class="ab abg">최신</span></td></tr>
+        <tr><td>외부 연동 범위 재정의서</td><td>v0.9</td><td>'26.06.03</td><td>Tech WG</td><td><span class="ab abo2">초안</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRIVACY GATE ===== -->
+<div class="apage" id="apage-privacy">
+  <div class="sec-title">🔐 프라이버시 게이트 & 데이터 거버넌스</div>
+  <div class="g g3">
+    <div class="ac"><h3>Privacy Gate 상태</h3><div class="kpi" style="font-size:20px;color:#2ECC71;">✓ v1 통과</div><div class="kpi-sub">외부 API 연동 활성화</div></div>
+    <div class="ac"><h3>비식별 재현율</h3><div class="kpi" style="font-size:20px;">0.003%</div><div class="kpi-sub">재식별 위험률 (목표 &lt; 0.01%)</div><span class="kb up">충족</span></div>
+    <div class="ac"><h3>IRB/윤리검토</h3><div class="kpi" style="font-size:20px;color:#F39C12;">진행 중</div><div class="kpi-sub">서강대 IRB 검토</div><span class="kb wn">D-14</span></div>
+  </div>
+  <div class="ac" style="margin-bottom:12px;"><h3>Privacy Gate 데이터 흐름</h3>
+    <div class="gflow">
+      <div class="gfbox">단말 원문<br><small style="color:rgba(255,255,255,.28);">시청로그·음성</small></div><div class="gfarr">→</div>
+      <div class="gfbox gfhl">온디바이스 전처리<br><small>해시/임베딩/범주화</small></div><div class="gfarr">→</div>
+      <div class="gfbox gfhl">Privacy Gate ◆<br><small>필터링·DLP·허용목록</small></div><div class="gfarr">→</div>
+      <div class="gfbox">비가역 feature<br><small style="color:rgba(255,255,255,.28);">서버 저장 허용</small></div><div class="gfarr">→</div>
+      <div class="gfbox">외부 API/LLM</div>
+    </div>
+    <div class="gflow">
+      <div class="gfbox gfbl">🚫 원문 로그</div><div class="gfarr">→</div>
+      <div class="gfbox gfbl">🚫 직접 식별정보 (PII)</div><div class="gfarr">→</div>
+      <div class="gfbox gfbl">🚫 원본 미디어</div>
+      <span style="margin-left:8px;color:#E74C3C;font-weight:700;font-size:12px;">← 완전 차단</span>
+    </div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>데이터 거버넌스 정책</h3>
+      <table class="tbl"><thead><tr><th>항목</th><th>정책</th></tr></thead><tbody>
+        <tr><td>수집 동의</td><td>이중 동의 (서비스+연구)</td></tr>
+        <tr><td>보관기간</td><td>비식별 feature 3년, 원문 즉시 삭제</td></tr>
+        <tr><td>철회/삭제</td><td>7일 이내 완전 삭제, 회수 이력 보관</td></tr>
+        <tr><td>비식별 수준</td><td>해시+임베딩, 재식별 위험 ≤ 0.01%</td></tr>
+        <tr><td>외부 전달</td><td>비가역 특징만 허용, 원문 금지</td></tr>
+        <tr><td>감사 주기</td><td>분기 1회 Privacy Board 점검</td></tr>
+      </tbody></table>
+    </div>
+    <div class="ac"><h3>패널 참여자 보호 현황</h3>
+      <div class="kpw"><div class="kpl"><span class="kpn">동의서 수집</span><span class="kpv">620 / 620</span></div><div class="kpb"><div class="kpf" style="width:100%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">철회 요청 처리</span><span class="kpv">12 / 12건</span></div><div class="kpb"><div class="kpf" style="width:100%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">IRB 검토 진행률</span><span class="kpv">75%</span></div><div class="kpb"><div class="kpf" style="width:75%;background:linear-gradient(90deg,#F39C12,#F1C40F);"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SERVER RAG ===== -->
+<div class="apage" id="apage-server">
+  <div class="sec-title">🖥️ 서버 관리 & RAG 시스템</div>
+  <div class="g g4">
+    <div class="ac"><h3>API 서버</h3><div style="margin:7px 0;"><span class="sdot dg"></span><span style="color:#2ECC71;font-weight:700;font-size:13px;">정상 운영</span></div><div class="kpi-sub">avg 142ms</div></div>
+    <div class="ac"><h3>RAG 벡터 DB</h3><div style="margin:7px 0;"><span class="sdot dg"></span><span style="color:#2ECC71;font-weight:700;font-size:13px;">정상</span></div><div class="kpi-sub">482K 벡터</div></div>
+    <div class="ac"><h3>온디바이스 모델</h3><div style="margin:7px 0;"><span class="sdot dy"></span><span style="color:#F39C12;font-weight:700;font-size:13px;">배포 중</span></div><div class="kpi-sub">v0.4 → v0.5</div></div>
+    <div class="ac"><h3>Privacy Gate</h3><div style="margin:7px 0;"><span class="sdot dg"></span><span style="color:#2ECC71;font-weight:700;font-size:13px;">정상</span></div><div class="kpi-sub">오늘 차단 3,241건</div></div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>서버 리소스</h3>
+      <div class="srv"><div class="srv-hdr"><div class="srv-icon">🤖</div><div><div style="font-size:13px;font-weight:700;color:var(--white);">AI Agent API (K8s)</div><div style="font-size:11px;color:rgba(255,255,255,.28);">Seoul · 3 replicas</div></div></div><div class="smet"><div class="sm"><div class="sm-n">34%</div><div class="sm-l">CPU</div></div><div class="sm"><div class="sm-n">62%</div><div class="sm-l">Memory</div></div><div class="sm"><div class="sm-n">142ms</div><div class="sm-l">Latency</div></div></div></div>
+      <div class="srv"><div class="srv-hdr"><div class="srv-icon">🗄️</div><div><div style="font-size:13px;font-weight:700;color:var(--white);">Vector DB (Qdrant)</div><div style="font-size:11px;color:rgba(255,255,255,.28);">482,100 vectors</div></div></div><div class="smet"><div class="sm"><div class="sm-n">482K</div><div class="sm-l">Vectors</div></div><div class="sm"><div class="sm-n">99.9%</div><div class="sm-l">Uptime</div></div><div class="sm"><div class="sm-n">18ms</div><div class="sm-l">Query</div></div></div></div>
+      <div class="srv" style="margin-bottom:0;"><div class="srv-hdr"><div class="srv-icon">🔐</div><div><div style="font-size:13px;font-weight:700;color:var(--white);">Privacy Gate (DLP)</div><div style="font-size:11px;color:rgba(255,255,255,.28);">PII 필터 · Prompt 검사</div></div></div><div class="smet"><div class="sm"><div class="sm-n">3.2K</div><div class="sm-l">오늘 차단</div></div><div class="sm"><div class="sm-n">0건</div><div class="sm-l">오탐</div></div><div class="sm"><div class="sm-n">4ms</div><div class="sm-l">지연</div></div></div></div>
+    </div>
+    <div class="ac"><h3>RAG 파이프라인 & 로그</h3>
+      <div class="kpw"><div class="kpl"><span class="kpn">콘텐츠 메타데이터</span><span class="kpv">48.2만 건</span></div><div class="kpb"><div class="kpf" style="width:82%;background:linear-gradient(90deg,#3498DB,#2980B9);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">비식별 선호 임베딩</span><span class="kpv">8,412건</span></div><div class="kpb"><div class="kpf" style="width:100%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+      <div class="kpw"><div class="kpl"><span class="kpn">Think Aloud 임베딩</span><span class="kpv">142,300건</span></div><div class="kpb"><div class="kpf" style="width:67%;background:linear-gradient(90deg,var(--pl),var(--aaccent));"></div></div></div>
+      <div class="sub" style="margin-top:12px;">시스템 로그</div>
+      <div class="log"><div class="log-t">09:41:02</div><div class="log-lv" style="background:rgba(39,174,96,.15);color:#2ECC71;">INFO</div><div class="log-m">RAG index sync completed (482,100)</div></div>
+      <div class="log"><div class="log-t">09:38:17</div><div class="log-lv" style="background:rgba(243,156,18,.15);color:#F39C12;">WARN</div><div class="log-m">Ondevice model v0.5 rollout 34%</div></div>
+      <div class="log"><div class="log-t">09:20:11</div><div class="log-lv" style="background:rgba(231,76,60,.15);color:#E74C3C;">ERR</div><div class="log-m">LLM rate limit (GPT-4o) — fallback</div></div>
+      <div class="log"><div class="log-t">09:19:58</div><div class="log-lv" style="background:rgba(39,174,96,.15);color:#2ECC71;">INFO</div><div class="log-m">Fallback model activated OK</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECURITY ===== -->
+<div class="apage" id="apage-security">
+  <div class="sec-title">🛡️ 보안조치 이행계획</div>
+  <div class="g g4">
+    <div class="ac"><h3>보안점검 상태</h3><div class="kpi" style="font-size:20px;color:#2ECC71;">정상</div><div class="kpi-sub">'26.06.01</div></div>
+    <div class="ac"><h3>취약점 진단</h3><div class="kpi" style="font-size:22px;">0건</div><span class="kb up">Critical 0</span></div>
+    <div class="ac"><h3>이상징후</h3><div class="kpi" style="font-size:22px;">0건</div><span class="kb up">정상</span></div>
+    <div class="ac"><h3>다음 모의침투</h3><div class="kpi" style="font-size:20px;">'26.09</div><span class="kb wn">예정</span></div>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>보안 통제 6대 항목</h3>
+      <div class="sctrl"><div class="sc-icon" style="background:#FEE2E2;">🚫</div><div><div class="sc-t">데이터 분류 & 반출 금지</div><div class="sc-d">PII·원문·원본 미디어 금지. DLP 자동 탐지.</div><span class="ab abg" style="display:inline-block;margin-top:3px;">시행 중</span></div></div>
+      <div class="sctrl"><div class="sc-icon" style="background:var(--acc-pale);">🔒</div><div><div class="sc-t">암호화 (전송/저장) + KMS</div><div class="sc-d">TLS 1.3, AES-256, 키 로테이션 90일.</div><span class="ab abg" style="display:inline-block;margin-top:3px;">시행 중</span></div></div>
+      <div class="sctrl"><div class="sc-icon" style="background:#FEF3C7;">👤</div><div><div class="sc-t">RBAC + 감사로그</div><div class="sc-d">최소권한. 모든 관리자 행위 90일 보관.</div><span class="ab abg" style="display:inline-block;margin-top:3px;">시행 중</span></div></div>
+      <div class="sctrl"><div class="sc-icon" style="background:var(--acc-pale);">🌐</div><div><div class="sc-t">외부 API/LLM Privacy Gate</div><div class="sc-d">프롬프트 필터링, DLP, 허용 목록 기반.</div><span class="ab abg" style="display:inline-block;margin-top:3px;">시행 중</span></div></div>
+      <div class="sctrl"><div class="sc-icon" style="background:#EDE9FE;">🔍</div><div><div class="sc-t">보안점검 + 모의침투 + SOP</div><div class="sc-d">분기 취약점 진단, 연 1회 모의침투.</div><span class="ab aby" style="display:inline-block;margin-top:3px;">예정 '26.09</span></div></div>
+      <div class="sctrl" style="border:none;"><div class="sc-icon" style="background:#F0FDF4;">👥</div><div><div class="sc-t">패널 참여자 보호 (IRB/동의/삭제)</div><div class="sc-d">이중 동의, 7일 내 삭제, IRB 자문.</div><span class="ab aby" style="display:inline-block;margin-top:3px;">IRB 진행 중</span></div></div>
+    </div>
+    <div class="ac"><h3>보안 이벤트 로그</h3>
+      <div class="log"><div class="log-t">09:41</div><div class="log-lv" style="background:rgba(39,174,96,.15);color:#2ECC71;">OK</div><div class="log-m">RBAC v2.1 정책 갱신 완료</div></div>
+      <div class="log"><div class="log-t">09:20</div><div class="log-lv" style="background:rgba(231,76,60,.15);color:#E74C3C;">BLOCK</div><div class="log-m">PII 포함 프롬프트 차단 (user_0284)</div></div>
+      <div class="log"><div class="log-t">08:55</div><div class="log-lv" style="background:rgba(39,174,96,.15);color:#2ECC71;">OK</div><div class="log-m">TLS 인증서 갱신 완료 (D-90)</div></div>
+      <div class="log"><div class="log-t">06:00</div><div class="log-lv" style="background:rgba(39,174,96,.15);color:#2ECC71;">OK</div><div class="log-m">취약점 스캔 완료 — Critical 0건</div></div>
+      <div style="margin-top:12px;background:var(--acc-pale);border:1px solid var(--acc-mid);border-radius:9px;padding:11px;font-size:11px;line-height:1.8;color:var(--gray);">
+        재식별 위험률 <strong style="color:var(--green);">0.003%</strong> (목표 &lt;0.01% 충족)<br>
+        검증: k-익명성 k≥10, l-다양성 적용<br>
+        최근 검증: <strong style="color:var(--dark);">'26.06.01</strong> · 담당: 하이젠
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== USERS ===== -->
+<div class="apage" id="apage-users">
+  <div id="user-list-view">
+    <div class="sec-title">🙍 사용자 관리</div>
+    <div class="g g3">
+      <div class="ac"><h3>활성</h3><div class="kpi" style="color:#2ECC71;">6,214</div><span class="kb up">73.9%</span></div>
+      <div class="ac"><h3>슬리핑</h3><div class="kpi" style="color:#F39C12;">1,580</div><span class="kb wn">14일+ 미접속</span></div>
+      <div class="ac"><h3>신규 (30일)</h3><div class="kpi" style="color:var(--aaccent);">618</div><span class="kb abo">이번 달</span></div>
+    </div>
+    <div class="ac"><h3>사용자 목록 <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,.22);">(클릭 → 상세)</span></h3>
+      <table class="tbl"><thead><tr><th>사용자</th><th>가입일</th><th>상태</th><th>시청기록</th><th>AI 대화</th><th>포인트</th><th>주요 장르</th></tr></thead>
+      <tbody>
+        <tr onclick="showUD('지민')"><td><div style="display:flex;align-items:center;gap:7px;"><div class="av">지</div>김지민</div></td><td>2024.11.03</td><td><span class="ab abg">활성</span></td><td>87편</td><td>142건</td><td style="color:var(--aaccent);font-weight:700;">1,240P</td><td>요리/스릴러</td></tr>
+        <tr onclick="showUD('수현')"><td><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:linear-gradient(135deg,#C2DAFF,#3498DB);">수</div>박수현</div></td><td>2024.10.15</td><td><span class="ab abg">활성</span></td><td>64편</td><td>98건</td><td style="color:var(--aaccent);font-weight:700;">980P</td><td>드라마/여행</td></tr>
+        <tr onclick="showUD('준호')"><td><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:linear-gradient(135deg,#C2FFC2,#27AE60);">준</div>이준호</div></td><td>2024.12.01</td><td><span class="ab abo2">신규</span></td><td>12편</td><td>21건</td><td style="color:var(--aaccent);font-weight:700;">210P</td><td>경제/다큐</td></tr>
+        <tr onclick="showUD('미래')"><td><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:linear-gradient(135deg,#FFE0C2,#E67E22);">미</div>최미래</div></td><td>2024.09.20</td><td><span class="ab aby">슬리핑</span></td><td>43편</td><td>55건</td><td style="color:var(--aaccent);font-weight:700;">620P</td><td>예능/먹방</td></tr>
+        <tr onclick="showUD('태양')"><td><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:linear-gradient(135deg,#E8C2FF,#9B59B6);">태</div>정태양</div></td><td>2024.11.28</td><td><span class="ab abg">활성</span></td><td>55편</td><td>77건</td><td style="color:var(--aaccent);font-weight:700;">810P</td><td>스릴러/SF</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div id="user-detail-view" style="display:none;">
+    <button class="back-btn" onclick="hideUD()">← 목록으로</button>
+    <div class="u-hdr"><div class="u-av" id="ud-av">지</div><div><div class="u-name" id="ud-name">김지민</div><div class="u-meta" id="ud-meta"></div></div>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <div style="text-align:center;background:rgba(255,107,53,.1);border-radius:9px;padding:8px 14px;"><div style="font-size:18px;font-weight:800;color:var(--aaccent);">87편</div><div style="font-size:10px;color:rgba(255,255,255,.35);">시청기록</div></div>
+        <div style="text-align:center;background:rgba(39,174,96,.1);border-radius:9px;padding:8px 14px;"><div style="font-size:18px;font-weight:800;color:#2ECC71;">142건</div><div style="font-size:10px;color:rgba(255,255,255,.35);">AI 대화</div></div>
+        <div style="text-align:center;background:rgba(52,152,219,.1);border-radius:9px;padding:8px 14px;"><div style="font-size:18px;font-weight:800;color:#3498DB;">76%</div><div style="font-size:10px;color:rgba(255,255,255,.35);">추천채택</div></div>
+      </div>
+    </div>
+
+      <!-- 탭 버튼 -->
+    <div class="itabs" id="ud-tabs">
+      <button class="itab active" onclick="sUT('watch',this)">📺 시청기록</button>
+      <button class="itab" onclick="sUT('profile',this)">🧠 성향분석</button>
+      <button class="itab" onclick="sUT('chat',this)">💬 대화기록</button>
+      <button class="itab" onclick="sUT('rec',this)">🎯 추천기록</button>
+    </div>
+
+    <!-- ── 시청기록 탭 ── -->
+    <div id="ut-watch">
+      <div class="g g2" style="margin-bottom:12px;">
+        <div class="ac"><h3>플랫폼 비율</h3>
+          <div class="kpw"><div class="kpl"><span class="kpn">🎬 Netflix</span><span class="kpv">52편 (59.8%)</span></div><div class="kpb"><div class="kpf" style="width:60%;background:linear-gradient(90deg,#E50914,#B00610);"></div></div></div>
+          <div class="kpw"><div class="kpl"><span class="kpn">▶ YouTube</span><span class="kpv">29편 (33.3%)</span></div><div class="kpb"><div class="kpf" style="width:33%;background:linear-gradient(90deg,#FF0000,#CC0000);"></div></div></div>
+          <div class="kpw"><div class="kpl"><span class="kpn">🌊 Wavve</span><span class="kpv">6편 (6.9%)</span></div><div class="kpb"><div class="kpf" style="width:7%;background:linear-gradient(90deg,#3498DB,#2980B9);"></div></div></div>
+          <div style="margin-top:12px;"><h3>월별 시청 편수</h3>
+            <div class="bar"><div class="bar-l">3월</div><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><div class="bar-v">24편</div></div>
+            <div class="bar"><div class="bar-l">4월</div><div class="bar-bg"><div class="bar-fill" style="width:88%"></div></div><div class="bar-v">21편</div></div>
+            <div class="bar"><div class="bar-l">5월</div><div class="bar-bg"><div class="bar-fill" style="width:75%"></div></div><div class="bar-v">18편</div></div>
+            <div class="bar"><div class="bar-l">6월</div><div class="bar-bg"><div class="bar-fill" style="width:50%"></div></div><div class="bar-v">12편</div></div>
+          </div>
+        </div>
+        <div class="ac"><h3>장르별 시청 분포</h3>
+          <div class="bar"><div class="bar-l">요리/먹방</div><div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div><div class="bar-v">22편</div></div>
+          <div class="bar"><div class="bar-l">스릴러</div><div class="bar-bg"><div class="bar-fill" style="width:75%"></div></div><div class="bar-v">18편</div></div>
+          <div class="bar"><div class="bar-l">경제/시사</div><div class="bar-bg"><div class="bar-fill" style="width:58%"></div></div><div class="bar-v">14편</div></div>
+          <div class="bar"><div class="bar-l">여행/예능</div><div class="bar-bg"><div class="bar-fill" style="width:42%"></div></div><div class="bar-v">10편</div></div>
+          <div class="bar"><div class="bar-l">드라마</div><div class="bar-bg"><div class="bar-fill" style="width:38%"></div></div><div class="bar-v">9편</div></div>
+          <div class="bar"><div class="bar-l">다큐</div><div class="bar-bg"><div class="bar-fill" style="width:17%"></div></div><div class="bar-v">4편</div></div>
+          <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.35);">평균 시청 시간: <strong style="color:var(--white);">48분/편</strong> · 총 누적: <strong style="color:var(--white);">69.9시간</strong></div>
+        </div>
+      </div>
+      <div class="ac"><h3>시청 기록 상세 (최근 12편)</h3>
+        <table class="tbl">
+          <thead><tr><th>콘텐츠</th><th>플랫폼</th><th>장르</th><th>시청일</th><th>시간</th><th>평점</th><th>후기</th></tr></thead>
+          <tbody>
+            <tr><td>흑백요리사 E03</td><td>Netflix</td><td>요리/리얼리티</td><td>2025.03.18</td><td>47분</td><td>★★★★☆</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>슈카월드 경제 분석</td><td>YouTube</td><td>경제/시사</td><td>2025.03.17</td><td>22분</td><td>★★★★★</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>지금 우리 학교는 E01</td><td>Netflix</td><td>스릴러</td><td>2025.03.16</td><td>55분</td><td>★★★★★</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>오징어게임 S2 E01</td><td>Netflix</td><td>스릴러/드라마</td><td>2025.03.10</td><td>60분</td><td>★★★☆☆</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>부동산 읽어주는 남자</td><td>YouTube</td><td>경제/부동산</td><td>2025.03.08</td><td>31분</td><td>★★★★☆</td><td><span class="ab aby">미작성</span></td></tr>
+            <tr><td>짠내투어 일본편</td><td>YouTube</td><td>여행/예능</td><td>2025.03.05</td><td>24분</td><td>★★★★☆</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>더 글로리 E01~E04</td><td>Netflix</td><td>드라마</td><td>2025.02.28</td><td>240분</td><td>★★★★★</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>마스크걸 E01</td><td>Netflix</td><td>스릴러</td><td>2025.02.22</td><td>55분</td><td>★★★★☆</td><td><span class="ab aby">미작성</span></td></tr>
+            <tr><td>흑백요리사 E01~E02</td><td>Netflix</td><td>요리/리얼리티</td><td>2025.02.15</td><td>94분</td><td>★★★★★</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>경제 유튜버 삼프로TV</td><td>YouTube</td><td>경제/시사</td><td>2025.02.10</td><td>18분</td><td>★★★★☆</td><td><span class="ab abg">작성</span></td></tr>
+            <tr><td>블루플래닛 E01</td><td>Netflix</td><td>다큐</td><td>2025.02.05</td><td>50분</td><td>★★★★☆</td><td><span class="ab aby">미작성</span></td></tr>
+            <tr><td>나 혼자 산다 (Wavve)</td><td>Wavve</td><td>예능</td><td>2025.01.30</td><td>70분</td><td>★★★☆☆</td><td><span class="ab abg">작성</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 성향분석 탭 ── -->
+    <div id="ut-profile" style="display:none;">
+      <div class="g g2" style="margin-bottom:12px;">
+        <div class="ac"><h3>장르 선호도 레이더 차트</h3>
+          <svg viewBox="0 0 260 220" style="width:100%;display:block;">
+            <polygon points="130,60 185,88 185,148 130,176 75,148 75,88" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <polygon points="130,42 198,79 198,161 130,198 62,161 62,79" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <polygon points="130,24 211,71 211,173 130,220 49,173 49,71" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <line x1="130" y1="118" x2="130" y2="24" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            <line x1="130" y1="118" x2="211" y2="71" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            <line x1="130" y1="118" x2="211" y2="173" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            <line x1="130" y1="118" x2="130" y2="220" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            <line x1="130" y1="118" x2="49" y2="173" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            <line x1="130" y1="118" x2="49" y2="71" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+            <!-- 요리90 스릴러80 경제70 여행55 다큐40 로맨스25 -->
+            <polygon points="130,33 204,74 202,162 130,202 68,157 68,77"
+              fill="rgba(30,95,216,.15)" stroke="var(--acc)" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="130" cy="33" r="5" fill="var(--acc)"/>
+            <circle cx="204" cy="74" r="5" fill="var(--acc)"/>
+            <circle cx="202" cy="162" r="5" fill="var(--acc)"/>
+            <circle cx="130" cy="202" r="5" fill="var(--acc)"/>
+            <circle cx="68" cy="157" r="5" fill="var(--acc)"/>
+            <circle cx="68" cy="77" r="5" fill="var(--acc)"/>
+            <text x="130" y="18" text-anchor="middle" fill="var(--dark)" font-size="11" font-weight="700">요리/먹방 90</text>
+            <text x="220" y="72" fill="var(--dark)" font-size="10">스릴러 80</text>
+            <text x="217" y="172" fill="var(--dark)" font-size="10">경제 70</text>
+            <text x="130" y="215" text-anchor="middle" fill="var(--dark)" font-size="10">여행 55</text>
+            <text x="2" y="172" fill="var(--dark)" font-size="10">다큐 40</text>
+            <text x="5" y="72" fill="var(--dark)" font-size="10">로맨스 25</text>
+          </svg>
+        </div>
+        <div class="ac"><h3>시청 시간대 분포</h3>
+          <svg viewBox="0 0 220 140" style="width:100%;height:140px;">
+            <line x1="20" y1="110" x2="210" y2="110" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+            <rect x="25" y="90" width="24" height="20" rx="3" fill="var(--acc-pale)" stroke="var(--acc-mid)" stroke-width="1"/>
+            <rect x="58" y="72" width="24" height="38" rx="3" fill="#BFDBFE"/>
+            <rect x="91" y="50" width="24" height="60" rx="3" fill="#60A5FA"/>
+            <rect x="124" y="18" width="24" height="92" rx="3" fill="var(--acc)"/>
+            <rect x="157" y="78" width="24" height="32" rx="3" fill="#93C5FD"/>
+            <rect x="190" y="98" width="14" height="12" rx="3" fill="var(--acc-pale)" stroke="var(--acc-mid)" stroke-width="1"/>
+            <text x="37" y="122" text-anchor="middle" fill="var(--gray)" font-size="9">오전</text>
+            <text x="70" y="122" text-anchor="middle" fill="var(--gray)" font-size="9">오후</text>
+            <text x="103" y="122" text-anchor="middle" fill="var(--gray)" font-size="9">저녁</text>
+            <text x="136" y="122" text-anchor="middle" fill="var(--acc)" font-size="9" font-weight="700">심야★</text>
+            <text x="169" y="122" text-anchor="middle" fill="var(--gray)" font-size="9">새벽</text>
+            <text x="197" y="122" text-anchor="middle" fill="var(--gray)" font-size="9">기타</text>
+            <text x="136" y="12" text-anchor="middle" fill="var(--acc)" font-size="9">40%</text>
+          </svg>
+          <h3 style="margin-top:12px;">요일별 시청 활동</h3>
+          <div class="bar"><div class="bar-l">월~목</div><div class="bar-bg"><div class="bar-fill" style="width:28%"></div></div><div class="bar-v">평균 22분</div></div>
+          <div class="bar"><div class="bar-l">금</div><div class="bar-bg"><div class="bar-fill" style="width:72%"></div></div><div class="bar-v">90분</div></div>
+          <div class="bar"><div class="bar-l">토·일</div><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><div class="bar-v">130분</div></div>
+        </div>
+      </div>
+      <div class="ac"><h3>AI 성향 프로파일 (자동 생성)</h3>
+        <div class="g g2">
+          <div>
+            <div class="sub">핵심 특성</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--acc-pale);border-radius:8px;"><span>🍳</span><span style="color:var(--gray);">요리 콘텐츠 애호 → 실제 관심사는 <strong style="color:var(--dark);">음식·먹방 문화</strong></span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#EDE9FE;border-radius:8px;"><span>🎭</span><span style="color:var(--gray);">스릴러 몰입도 최상 — <strong style="color:var(--dark);">이탈 없이 시즌 완주</strong></span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F0F9FF;border-radius:8px;"><span>📱</span><span style="color:var(--gray);">평일 출퇴근 중 <strong style="color:var(--dark);">YouTube 단편 20~30분</strong></span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F0FDF4;border-radius:8px;"><span>🌙</span><span style="color:var(--gray);">주말 심야 <strong style="color:var(--dark);">2~3시간 몰아보기</strong></span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#FEF3C7;border-radius:8px;"><span>💬</span><span style="color:var(--gray);">Think Aloud 참여 적극 — <strong style="color:var(--dark);">추천 채택률 76% 상회</strong></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="sub">수치 지표</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div class="kpw"><div class="kpl"><span class="kpn">추천 채택률</span><span class="kpv" style="color:#2ECC71;">76.3%</span></div><div class="kpb"><div class="kpf" style="width:76%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+              <div class="kpw"><div class="kpl"><span class="kpn">시즌 완주율</span><span class="kpv">94%</span></div><div class="kpb"><div class="kpf" style="width:94%;background:linear-gradient(90deg,var(--pl),var(--aaccent));"></div></div></div>
+              <div class="kpw"><div class="kpl"><span class="kpn">평균 평점</span><span class="kpv">4.3 / 5</span></div><div class="kpb"><div class="kpf" style="width:86%;background:linear-gradient(90deg,#F39C12,#F1C40F);"></div></div></div>
+              <div class="kpw"><div class="kpl"><span class="kpn">미션 완수율</span><span class="kpv">91%</span></div><div class="kpb"><div class="kpf" style="width:91%;background:linear-gradient(90deg,#27AE60,#2ECC71);"></div></div></div>
+              <div class="kpw"><div class="kpl"><span class="kpn">주간 평균 시청</span><span class="kpv">6.2시간</span></div><div class="kpb"><div class="kpf" style="width:62%;background:linear-gradient(90deg,#3498DB,#2980B9);"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;background:var(--acc-pale);border:1px solid var(--acc-mid);border-radius:9px;padding:12px;font-size:12px;color:var(--gray);line-height:1.8;">
+          <strong style="color:var(--acc);">AI 분석 메모 (자동 생성)</strong><br>
+          요리 콘텐츠를 즐기나 요리 자체보다 먹방·음식 문화에 관심. 스릴러 선호 높고 이탈 없이 시즌 완주. 주말 심야 집중 시청, 평일 출퇴근 유튜브 단편. Think Aloud 142건 적극 참여. 추천 채택률 76% — 전체 평균(68%) 대비 상회. MOS 기여도 상위 20% 패널.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 대화기록 탭 ── -->
+    <div id="ut-chat" style="display:none;">
+      <div class="g g3" style="margin-bottom:12px;">
+        <div class="ac" style="padding:12px;text-align:center;"><div class="sub">총 대화</div><div style="font-size:26px;font-weight:800;color:var(--white);">142건</div></div>
+        <div class="ac" style="padding:12px;text-align:center;"><div class="sub">Think Aloud</div><div style="font-size:26px;font-weight:800;color:var(--aaccent);">98건</div></div>
+        <div class="ac" style="padding:12px;text-align:center;"><div class="sub">AI 추출 정보</div><div style="font-size:26px;font-weight:800;color:#2ECC71;">441건</div></div>
+      </div>
+      <div class="ac"><h3>대화 기록 (최근 10건)</h3>
+        <div class="clog">        <div class="clog-who" style="color:var(--gray);">김지민 · 2025.03.18 23:41</div><div class="clog-msg">나 지금 넷플릭스에서 흑백요리사 보고 있어</div><div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;"><span class="clog-tag" style="background:var(--acc-pale);color:var(--acc);">📺 Netflix</span><span class="clog-tag" style="background:var(--acc-pale);color:var(--acc);">🎬 흑백요리사</span><span class="clog-tag" style="background:#EDE9FE;color:var(--purple);">🕐 23:41</span><span class="clog-tag" style="background:#DCFCE7;color:var(--green);">🎭 요리·리얼리티</span></div></div>
+        <div class="clog">        <div class="clog-who" style="color:var(--acc);">미디어 친구 AI</div><div class="clog-msg">기록 완료! 시각·플랫폼·장르 파악했어요. 재미있으신가요? 😊</div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--gray);">김지민 · 2025.03.18 23:43</div><div class="clog-msg">평소에 잘 보는 프로그램이야. 요리가 좋아서는 아니고 먹는 걸 좋아해서</div><div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;"><span class="clog-tag" style="background:#DCFCE7;color:var(--green);">✓ 반복 시청</span><span class="clog-tag" style="background:#FEF3C7;color:var(--yellow);">🍽️ 음식·먹방 문화로 취향 보정</span></div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--acc);">미디어 친구 AI</div><div class="clog-msg">취향 보정 완료! 반복 시청 + 음식·먹방 문화 관심으로 프로파일 업데이트했어요.</div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--gray);">김지민 · 2025.03.19 00:28</div><div class="clog-msg">지금 다 봤어</div><div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;"><span class="clog-tag" style="background:#EDE9FE;color:var(--purple);">⏱️ 총 47분</span><span class="clog-tag" style="background:#DCFCE7;color:var(--green);">+20P 적립</span></div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--acc);">미디어 친구 AI</div><div class="clog-msg">시청 완료! 총 47분 기록, +20P 적립 완료. 다음 화도 바로 보실 것 같으신가요? 😊</div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--gray);">김지민 · 2025.03.20 09:15</div><div class="clog-msg">유튜브에서 슈카월드 경제 영상 보는 중. 요즘 부동산이 어떻게 되는지 궁금해서</div><div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;"><span class="clog-tag" style="background:var(--acc-pale);color:var(--acc);">▶ YouTube</span><span class="clog-tag" style="background:#FEF3C7;color:var(--yellow);">🕐 09:15 출퇴근 패턴</span><span class="clog-tag" style="background:#DCFCE7;color:var(--green);">💰 경제·부동산 관심 추가</span></div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--acc);">미디어 친구 AI</div><div class="clog-msg">출퇴근 중 경제 콘텐츠 소비 패턴 확인했어요! 부동산·재테크 관련 채널을 더 추천해드릴까요?</div></div>
+        <div class="clog"><div class="clog-who" style="color:var(--gray);">김지민 · 2025.03.21 22:30</div><div class="clog-msg">오늘 더 글로리 4편 연속으로 봤어. 너무 재밌어서 멈출 수가 없었어</div><div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;"><span class="clog-tag" style="background:#EDE9FE;color:var(--purple);">🔥 몰아보기 240분</span><span class="clog-tag" style="background:#DCFCE7;color:var(--green);">★★★★★ 높은 몰입도</span></div></div>
+        <div class="clog" style="border:none;"><div class="clog-who" style="color:var(--acc);">미디어 친구 AI</div><div class="clog-msg">240분 몰아보기 감지! 스릴러 장르에서 강한 몰입 패턴이 확인되었어요. 〈마스크걸〉도 좋아하실 것 같아요. 🎭</div></div>
+      </div>
+    </div>
+
+    <!-- ── 추천기록 탭 ── -->
+    <div id="ut-rec" style="display:none;">
+      <div class="g g3" style="margin-bottom:12px;">
+        <div class="ac" style="padding:12px;text-align:center;"><div class="sub">총 추천</div><div style="font-size:26px;font-weight:800;color:var(--white);">38건</div></div>
+        <div class="ac" style="padding:12px;text-align:center;"><div class="sub">시청 완료</div><div style="font-size:26px;font-weight:800;color:#2ECC71;">29건</div></div>
+        <div class="ac" style="padding:12px;text-align:center;"><div class="sub">채택률</div><div style="font-size:26px;font-weight:800;color:var(--aaccent);">76.3%</div></div>
+      </div>
+      <div class="ac"><h3>추천 기록 상세</h3>
+        <table class="tbl">
+          <thead><tr><th>콘텐츠</th><th>플랫폼</th><th>추천 이유</th><th>추천일</th><th>시청</th><th>평점</th></tr></thead>
+          <tbody>
+            <tr><td>흑백요리사 시즌2</td><td>Netflix</td><td>요리+경쟁 포맷 선호 · 반복 시청 패턴</td><td>03.18</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★★</td></tr>
+            <tr><td>더 글로리</td><td>Netflix</td><td>스릴러 선호 · 심야 집중 시청 패턴</td><td>03.19</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★★</td></tr>
+            <tr><td>부동산 읽어주는 남자</td><td>YouTube</td><td>경제·부동산 관심 발화 감지</td><td>03.20</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★☆</td></tr>
+            <tr><td>블루플래닛 E01</td><td>Netflix</td><td>다큐 선호 + 주말 여유 시간 패턴</td><td>03.21</td><td><span class="ab aby">미시청</span></td><td>—</td></tr>
+            <tr><td>짠내투어 일본편</td><td>YouTube</td><td>여행·예능 선호 · 단편 소비 패턴</td><td>03.22</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★☆</td></tr>
+            <tr><td>마스크걸</td><td>Netflix</td><td>스릴러 선호 · 성인 드라마 관심</td><td>03.23</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★☆</td></tr>
+            <tr><td>지금 우리 학교는</td><td>Netflix</td><td>스릴러 장르 선호 · 청소년 드라마 관심</td><td>03.24</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★★</td></tr>
+            <tr><td>슈카월드 최신편</td><td>YouTube</td><td>경제 채널 반복 시청 패턴</td><td>03.25</td><td><span class="ab aby">미시청</span></td><td>—</td></tr>
+            <tr><td>삼프로TV 부동산</td><td>YouTube</td><td>부동산 관심 발화 + 출퇴근 단편 패턴</td><td>03.26</td><td><span class="ab abg">✓ 시청</span></td><td>★★★★☆</td></tr>
+            <tr><td>오징어게임 S2 완주</td><td>Netflix</td><td>스릴러 시즌 완주 패턴 · 미완 콘텐츠 감지</td><td>03.27</td><td><span class="ab abg">✓ 시청</span></td><td>★★★☆☆</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;"><h3>채택률 추이 (최근 4주)</h3>
+          <div class="bar"><div class="bar-l">3월 1주</div><div class="bar-bg"><div class="bar-fill" style="width:62%"></div></div><div class="bar-v">62%</div></div>
+          <div class="bar"><div class="bar-l">3월 2주</div><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><div class="bar-v">70%</div></div>
+          <div class="bar"><div class="bar-l">3월 3주</div><div class="bar-bg"><div class="bar-fill" style="width:76%"></div></div><div class="bar-v">76%</div></div>
+          <div class="bar"><div class="bar-l">3월 4주</div><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div><div class="bar-v">80%</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /user-detail-view -->
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="apage" id="apage-content">
+  <div class="sec-title">🎬 콘텐츠 분석</div>
+  <div class="g g4">
+    <div class="ac"><h3>총 기록</h3><div class="kpi">48,291</div><div class="kpi-sub">누적 시청 기록</div></div>
+    <div class="ac"><h3>이번 주 TOP</h3><div class="kpi" style="font-size:18px;margin-top:4px;">흑백요리사</div><div class="kpi-sub">Netflix · 1,240회</div></div>
+    <div class="ac"><h3>평균 평점</h3><div class="kpi">4.1<span style="font-size:16px;color:rgba(255,255,255,.3);">/5</span></div></div>
+    <div class="ac"><h3>추천 채택률</h3><div class="kpi">68<span style="font-size:16px;color:rgba(255,255,255,.3);">%</span></div><span class="kb up">▲ 5.2%</span></div>
+  </div>
+  <div class="ac" style="margin-bottom:12px;"><h3>인기 콘텐츠 TOP 5</h3>
+    <table class="tbl"><thead><tr><th>#</th><th>콘텐츠</th><th>플랫폼</th><th>장르</th><th>시청 수</th><th>평점</th><th>채택률</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--aaccent);font-weight:800;">1</td><td>흑백요리사 S1</td><td>Netflix</td><td>요리/리얼리티</td><td>1,240</td><td>★★★★☆</td><td>72%</td></tr>
+      <tr><td style="font-weight:800;">2</td><td>오징어게임 S2</td><td>Netflix</td><td>스릴러</td><td>1,108</td><td>★★★☆☆</td><td>65%</td></tr>
+      <tr><td style="font-weight:800;">3</td><td>슈카월드</td><td>YouTube</td><td>경제/시사</td><td>987</td><td>★★★★★</td><td>81%</td></tr>
+      <tr><td style="font-weight:800;">4</td><td>지금 우리 학교는</td><td>Netflix</td><td>스릴러</td><td>876</td><td>★★★★★</td><td>70%</td></tr>
+      <tr><td style="font-weight:800;">5</td><td>더 글로리</td><td>Netflix</td><td>드라마</td><td>804</td><td>★★★★☆</td><td>68%</td></tr>
+    </tbody></table>
+  </div>
+  <div class="g g2">
+    <div class="ac"><h3>플랫폼별 채택률</h3>
+      <div class="bar"><div class="bar-l">Netflix</div><div class="bar-bg"><div class="bar-fill" style="width:72%"></div></div><div class="bar-v">72%</div></div>
+      <div class="bar"><div class="bar-l">YouTube</div><div class="bar-bg"><div class="bar-fill" style="width:68%"></div></div><div class="bar-v">68%</div></div>
+      <div class="bar"><div class="bar-l">Wavve</div><div class="bar-bg"><div class="bar-fill" style="width:54%"></div></div><div class="bar-v">54%</div></div>
+      <div class="bar"><div class="bar-l">Tving</div><div class="bar-bg"><div class="bar-fill" style="width:49%"></div></div><div class="bar-v">49%</div></div>
+    </div>
+    <div class="ac"><h3>시간대별 분포</h3>
+      <div class="bar"><div class="bar-l">오전</div><div class="bar-bg"><div class="bar-fill" style="width:30%"></div></div><div class="bar-v">12%</div></div>
+      <div class="bar"><div class="bar-l">오후</div><div class="bar-bg"><div class="bar-fill" style="width:55%"></div></div><div class="bar-v">22%</div></div>
+      <div class="bar"><div class="bar-l">저녁</div><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><div class="bar-v">34%</div></div>
+      <div class="bar"><div class="bar-l">심야</div><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><div class="bar-v">40%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DEMO ===== -->
+<div class="apage" id="apage-ademo">
+  <div class="sec-title">🎮 관리자 데모</div>
+  <div class="ac" style="background:linear-gradient(135deg,var(--dark),#1E3A5F);border:1px solid var(--acc-mid);margin-bottom:12px;">
+    <div style="font-size:17px;font-weight:800;color:var(--white);margin-bottom:6px;">관리자 기능 자동 시연 (2분)</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:14px;">대시보드 → 패널 현황 → 롤링플랜 → 무빙타겟 → 프라이버시게이트 → 서버·RAG → 보안조치 → 사용자 상세 분석 → 콘텐츠 분석까지 전체 흐름을 2분간 자동 시연합니다.</div>
+    <button onclick="startDemo()" style="padding:13px 26px;background:var(--acc2);color:var(--white);border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--font);">▶ 관리자 시연 시작 (2분)</button>
+  </div>
+  <div class="ac"><h3>시나리오 목록 (클릭 → 해당 장면)</h3>
+    <table class="tbl"><thead><tr><th>#</th><th>장면</th><th>설명</th><th>시간</th></tr></thead>
+    <tbody id="demo-scenario-list"></tbody></table>
+  </div>
+</div>
+
+</div><!-- /abody -->
+
+<!-- DEMO OVERLAY -->
+<div class="ademo-ov" id="ademo-ov">
+  <div class="ademo-hl" id="ademo-hl"></div>
+  <div class="ademo-card" id="ademo-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;">
+      <div class="ademo-robot">🤖</div>
+      <div><div style="font-size:10px;color:rgba(255,255,255,.28);font-weight:600;">미디어 친구 · 관리자 시연</div><div id="ademo-label" style="font-size:12px;color:var(--aaccent);font-weight:700;"></div></div>
+      <button onclick="closeDemo()" style="margin-left:auto;background:rgba(255,255,255,.07);border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.4);font-family:var(--font);">✕</button>
+    </div>
+    <div class="ademo-txt" id="ademo-txt"></div>
+    <!-- 컨트롤 + 진행바 -->
+    <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+      <button id="btn-play"  onclick="demoPlay()"  title="재생"  style="width:28px;height:28px;border:none;border-radius:50%;background:var(--acc);color:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">▶</button>
+      <button id="btn-pause" onclick="demoPause()" title="일시정지" style="width:28px;height:28px;border:none;border-radius:50%;background:var(--border);color:var(--dark);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏸</button>
+      <button id="btn-stop"  onclick="demoStop()"  title="정지"  style="width:28px;height:28px;border:none;border-radius:50%;background:var(--border);color:var(--dark);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏹</button>
+      <div class="ademo-track" style="flex:1;margin-top:0;" onclick="seekDemo(event)">
+        <div class="ademo-fill" id="ademo-fill"></div>
+      </div>
+    </div>
+    <div class="ademo-timer" id="ademo-timer"></div>
+  </div>
+</div>
+
+<script>
+// ===== TAB =====
+const TAB_ORDER=['dashboard','panel','rolling','moving','privacy','server','security','users','content','ademo'];
+function aTab(tab){
+  document.querySelectorAll('.apage').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('apage-'+tab).classList.add('active');
+  const i=TAB_ORDER.indexOf(tab);
+  if(i>=0)document.querySelectorAll('.atab')[i]?.classList.add('active');
+}
+
+// ===== USER DETAIL =====
+const udMap={
+  지민:{av:'지',name:'김지민',meta:'가입일 2024.11.03 · 활성 · 1,240P · 패널 P-0001'},
+  수현:{av:'수',name:'박수현',meta:'가입일 2024.10.15 · 활성 · 980P · 패널 P-0002'},
+  준호:{av:'준',name:'이준호',meta:'가입일 2024.12.01 · 신규 · 210P · 패널 P-0003'},
+  미래:{av:'미',name:'최미래',meta:'가입일 2024.09.20 · 슬리핑 · 620P · 패널 P-0004'},
+  태양:{av:'태',name:'정태양',meta:'가입일 2024.11.28 · 활성 · 810P · 패널 P-0005'},
+};
+function showUD(k){
+  const u=udMap[k];if(!u)return;
+  document.getElementById('ud-av').textContent=u.av;
+  document.getElementById('ud-name').textContent=u.name;
+  document.getElementById('ud-meta').textContent=u.meta;
+  document.getElementById('user-list-view').style.display='none';
+  document.getElementById('user-detail-view').style.display='block';
+  sUT('watch');
+}
+function hideUD(){document.getElementById('user-list-view').style.display='';document.getElementById('user-detail-view').style.display='none';}
+function sUT(tab, btn){
+  ['watch','profile','chat','rec'].forEach(t=>{
+    const el=document.getElementById('ut-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('#ud-tabs .itab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    const idx=['watch','profile','chat','rec'].indexOf(tab);
+    const btns=document.querySelectorAll('#ud-tabs .itab');
+    if(btns[idx]) btns[idx].classList.add('active');
+  }
+}
+
+// ===== DEMO STEPS (3분=180초) =====
+const steps=[
+  {t:0,  tab:'dashboard', sel:'.g4',          label:'① 대시보드 KPI',     desc:'전체 사용자·DAU·AI 대화·추천 채택률 개요',
+   txt:'관리자 대시보드에 오신 것을 환영합니다 👋 상단 <b>KPI 카드 4개</b>에서 전체 사용자 8,412명, DAU 2,187명, AI 대화 14,320건, 추천 채택률 68%를 한눈에 파악합니다.'},
+  {t:12, tab:'dashboard', sel:'.g2',          label:'② KPI 달성 현황',    desc:'패널·MOS·미션 완수율 달성 게이지',
+   txt:'우측 카드에서 과제 핵심 지표를 추적해요. <b>패널 620/1,000명</b>(62%), <b>MOS 4.2/4.5</b>(93%), <b>미션 완수율 74%</b>(목표 80%) — 각 지표의 달성도를 실시간으로 모니터링합니다.'},
+  {t:24, tab:'panel',     sel:'.g4',          label:'③ 패널 현황 개요',   desc:'1,000명 패널 모집·활성·미션 완수율',
+   txt:'<b>패널 현황</b> 탭입니다. 현재 620명 확보(62%), 오늘 활성 438명(70.6%), 주간 미션 완수율 74%. 1,000명 실증을 위한 패널 현황을 종합적으로 모니터링합니다.'},
+  {t:36, tab:'panel',     sel:'.g2:first-of-type', label:'④ 히트맵 & 상태 분포', desc:'7주 활동 히트맵 · 도넛 차트',
+   txt:'<b>7주 활동 히트맵</b>으로 요일·주차별 패널 활동 밀도를 한눈에 파악해요. 오른쪽 도넛 차트에서 활성 70.6%, 슬리핑 29.4%, 이탈 9.2%의 상태 분포를 확인할 수 있습니다.'},
+  {t:48, tab:'panel',     sel:'.g2:last-of-type',  label:'⑤ 미션 현황 & 일별 추이', desc:'주간 미션 완수율 · 14일 기록 추이 차트',
+   txt:'<b>주간 미션 완수 현황</b>: 시청 기록 매일 1건(82.6% 양호), Think Aloud 3회/주(62.7% 주의), 플랫폼 기록 업로드(48.1% 미달). <b>14일 기록 추이 그래프</b>에서 오늘 438건 — 역대 최고 달성!'},
+  {t:62, tab:'panel',     sel:'.ac:last-child',    label:'⑥ 패널 개인별 현황', desc:'미션 달성 바 차트 · 이탈 위험 패널 식별',
+   txt:'패널 개인별 미션 달성 현황 테이블이에요. 달성 바 차트로 완수도를 시각화하고, 이탈 위험 패널(P-0616)을 조기 식별하여 리텐션 조치를 취할 수 있습니다.'},
+  {t:76, tab:'rolling',   sel:'.ac',               label:'⑦ 롤링 플랜 타임라인', desc:'연차별 계획·분기 변경이력·거버넌스 3층',
+   txt:'<b>Rolling Plan</b>입니다. 1차년도 기반 구축부터 3차년도 사업화까지 타임라인으로 정리되어 있어요. 분기별 변경이력과 Steering Committee·Tech WG·Privacy Board 3층 거버넌스 구조를 확인합니다.'},
+  {t:88, tab:'rolling',   sel:'.gate',              label:'⑧ 릴리즈 게이트', desc:'Privacy Gate v1 · Go/No-Go · 최종 실증',
+   txt:'세 가지 릴리즈 게이트: <b>Privacy Gate v1</b>(통과 완료), <b>중간 실증 Go/No-Go</b>(MOS≥4.2, 200명), <b>최종 실증</b>(1,000명, MOS≥4.5). 각 게이트는 명확한 통과 기준과 담당 기관이 지정되어 있습니다.'},
+  {t:100,tab:'moving',    sel:'.g3',                label:'⑨ 무빙 타겟 감지', desc:'외부 환경 변화 4건 · 목표 최적화',
+   txt:'<b>Moving Target</b> 체계: 이번 분기 4건 감지 — Netflix API 정책(HIGH), LLM 비용 급등(MID), 개인정보법 강화(MID), 온디바이스 기회(LOW). 각각 즉각적인 대응 방향이 연결됩니다.'},
+  {t:112,tab:'privacy',   sel:'.gflow',             label:'⑩ 프라이버시 게이트 흐름', desc:'데이터 흐름도 · PII 차단 · 비식별 검증',
+   txt:'<b>Privacy Gate 데이터 흐름</b>: 단말 원문 → 온디바이스 전처리 → Gate 필터링 → 비가역 feature만 서버 저장 → 외부 API. <b>원문·PII·원본 미디어는 외부 전달 완전 차단</b>됩니다.'},
+  {t:124,tab:'server',    sel:'.g4',                label:'⑪ 서버 & RAG 상태', desc:'API 서버·벡터DB·온디바이스 모델 현황',
+   txt:'<b>서버 관리</b>: API 서버(K8s, 142ms 정상), 벡터 DB(Qdrant, 48.2만 벡터), 온디바이스 모델 v0.5 배포 중(34%), Privacy Gate 오늘 3,241건 차단. 모든 구성요소 실시간 모니터링.'},
+  {t:136,tab:'security',  sel:'.g4',                label:'⑫ 보안조치 6대 통제', desc:'취약점 0건 · 감사로그 · 비식별 검증',
+   txt:'<b>보안조치 6대 통제</b>: 데이터 반출 금지, 암호화(TLS+AES-256), RBAC+감사로그, 외부 API Privacy Gate, 분기 모의침투, 패널 IRB 보호. 오늘 취약점 <b>Critical 0건!</b>'},
+  {t:148,tab:'users',     sel:'.ac',                label:'⑬ 사용자 시청기록', desc:'87편 기록 · 플랫폼별 분포 · 상세 목록',
+   txt:'사용자 상세로 진입합니다. <b>시청기록 탭</b>: 87편 기록, Netflix 52편·YouTube 29편·Wavve 6편 분포, 월별 추이 차트. 각 기록의 플랫폼·장르·평점·후기 여부까지 모두 추적됩니다.',
+   fn:()=>{showUD('지민');sUT('watch');}},
+  {t:160,tab:'users',     sel:'#ut-profile',        label:'⑭ 성향 레이더 분석', desc:'레이더 차트 · 시청 시간대 · AI 메모',
+   txt:'<b>성향분석 탭</b>: 레이더 차트로 장르 선호도(요리 90·스릴러 80·경제 70·여행 55·다큐 40), 심야 집중 시간대 바 차트, AI 분석 메모 자동 생성. 사용자를 입체적으로 파악합니다.',
+   fn:()=>sUT('profile')},
+  {t:168,tab:'users',     sel:'#ut-chat',           label:'⑮ Think Aloud 대화기록', desc:'AI 추출 태그 · 발화 맥락 분석',
+   txt:'<b>대화기록 탭</b>: 총 142건, Think Aloud 98건, AI 추출 정보 441건. 발화 문장마다 <b>AI가 추출한 정보 태그</b>(플랫폼·콘텐츠·시각·장르·관심사)를 시각화해서 보여줍니다.',
+   fn:()=>sUT('chat')},
+  {t:174,tab:'content',   sel:'.g4',                label:'⑯ 콘텐츠 분석', desc:'인기 TOP5 · 채택률 · 시간대 분포',
+   txt:'<b>콘텐츠 분석</b>: 추천 채택률 68%(목표 70% 근접), 심야 시청 40% 집중. 이 인사이트로 <b>푸시 알림 타이밍과 추천 시점</b>을 최적화합니다. 📊'},
+  {t:178,tab:'ademo',     sel:null,                 label:'✅ 마무리',          desc:'전체 흐름 요약',
+   txt:'이것이 <b>미디어 친구 관리자 시스템</b>의 전체 흐름입니다. 📊 KPI 대시보드 → 👥 1,000명 패널 관리 → 🔄 Rolling Plan → 🎯 Moving Target → 🔐 Privacy Gate → 🖥️ 서버·RAG → 🛡️ 보안조치 → 🙍 사용자 심층 분석 → 🎬 콘텐츠 인사이트. 데이터 기반 과제 운영을 시작하세요! 🚀'},
+];
+
+const TOTAL=180;
+let timer=null,elapsed=0,running=false,paused=false;
+
+function updateBtnState(){
+  const bp=document.getElementById('btn-play');
+  const bpa=document.getElementById('btn-pause');
+  const bs=document.getElementById('btn-stop');
+  if(!bp)return;
+  bp.style.background  = (!running||paused) ? 'var(--acc)' : 'var(--border)';
+  bp.style.color       = (!running||paused) ? '#fff' : 'var(--dark)';
+  bpa.style.background = (running&&!paused) ? 'var(--acc)' : 'var(--border)';
+  bpa.style.color      = (running&&!paused) ? '#fff' : 'var(--dark)';
+}
+
+function startDemo(){
+  running=true;paused=false;elapsed=0;
+  document.getElementById('ademo-ov').style.display='block';
+  document.getElementById('ademo-fill').style.width='0%';
+  document.getElementById('ademo-timer').textContent='0초 / 120초';
+  updateBtnState();
+  runStep(0);
+  clearInterval(timer);
+  timer=setInterval(tick,1000);
+}
+
+function tick(){
+  if(!running||paused)return;
+  elapsed++;
+  document.getElementById('ademo-fill').style.width=Math.min((elapsed/TOTAL)*100,100)+'%';
+  document.getElementById('ademo-timer').textContent=`${elapsed}초 / 120초`;
+  const n=steps.findIndex(s=>s.t===elapsed);
+  if(n!==-1)runStep(n);
+  if(elapsed>=TOTAL){clearInterval(timer);running=false;updateBtnState();}
+}
+
+function demoPlay(){
+  if(!running){startDemo();return;}
+  if(paused){paused=false;updateBtnState();}
+}
+
+function demoPause(){
+  if(!running)return;
+  paused=!paused;
+  updateBtnState();
+}
+
+function demoStop(){
+  running=false;paused=false;
+  clearInterval(timer);
+  document.getElementById('ademo-fill').style.width='0%';
+  document.getElementById('ademo-timer').textContent='0초 / 120초';
+  document.getElementById('ademo-hl').style.opacity=0;
+  document.getElementById('ademo-txt').innerHTML='';
+  document.getElementById('ademo-label').textContent='';
+  updateBtnState();
+}
+
+function runStep(idx){
+  const s=steps[idx];if(!s)return;
+  aTab(s.tab);
+  // 탭 전환 시 스크롤 최상단으로 리셋
+  const body=document.querySelector('.abody');
+  if(body) body.scrollTop=0;
+
+  document.getElementById('ademo-label').textContent=s.label;
+  const el=document.getElementById('ademo-txt');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=s.txt;el.style.opacity=1;},150);
+  if(s.fn)setTimeout(s.fn,400);
+  setTimeout(()=>applyHL(s.tab,s.sel),600);
+}
+
+function applyHL(tab,sel){
+  const hl=document.getElementById('ademo-hl');
+  const card=document.getElementById('ademo-card');
+  if(!sel){hl.style.opacity=0;card.style.bottom='28px';card.style.top='auto';return;}
+  const pg=document.getElementById('apage-'+tab);
+  const t=pg?.querySelector(sel);
+  if(!t){hl.style.opacity=0;return;}
+  const tr=t.getBoundingClientRect();
+  hl.style.opacity=1;
+  hl.style.top=(tr.top-4)+'px';hl.style.left=(tr.left-4)+'px';
+  hl.style.width=(tr.width+8)+'px';hl.style.height=(tr.height+8)+'px';
+  const wh=window.innerHeight;
+  const cardH=card.offsetHeight||200;
+  if(tr.bottom>wh*0.5){card.style.bottom='auto';card.style.top='16px';}
+  else{card.style.top='auto';card.style.bottom='28px';}
+}
+
+function closeDemo(){
+  running=false;clearInterval(timer);
+  document.getElementById('ademo-ov').style.display='none';
+  document.getElementById('ademo-hl').style.opacity=0;
+}
+
+function seekDemo(e){
+  const track=e.currentTarget;
+  const r=Math.min(Math.max(e.offsetX/track.offsetWidth,0),1);
+  elapsed=Math.floor(r*TOTAL);
+  document.getElementById('ademo-fill').style.width=(r*100)+'%';
+  document.getElementById('ademo-timer').textContent=`${elapsed}초 / 180초`;
+  let si=0;
+  for(let i=0;i<steps.length;i++)if(steps[i].t<=elapsed)si=i;
+  runStep(si);
+}
+
+function jumpDemo(idx){
+  if(!running)startDemo();
+  setTimeout(()=>{elapsed=steps[idx]?.t||0;runStep(idx);},200);
+}
+
+// ===== INIT (after all declarations) =====
+(function(){
+  // Heatmap
+  const weeks=['5/19주','5/26주','6/2주','6/9주','6/16주','6/23주','6/30주'];
+  const data=[[2,1,3,2,4,4,3],[1,2,2,3,4,3,4],[2,3,3,2,4,4,3],[3,2,4,3,4,4,4],[2,3,3,4,4,4,3],[3,3,4,4,4,4,4],[3,4,4,4,4,4,4]];
+  const wrap=document.getElementById('heatmap-rows');
+  data.forEach((row,wi)=>{
+    const r=document.createElement('div');
+    r.style.cssText='display:flex;gap:6px;margin-bottom:3px;';
+    r.innerHTML=`<div style="width:32px;font-size:10px;color:rgba(255,255,255,.28);display:flex;align-items:center;">${weeks[wi]}</div>
+    <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+      ${row.map(v=>`<div class="hm-${v}" style="height:18px;border-radius:3px;" title="${[0,150,300,450,620][v]}명 활성"></div>`).join('')}
+    </div>`;
+    wrap.appendChild(r);
+  });
+
+  // Demo scenario list
+  const list=document.getElementById('demo-scenario-list');
+  steps.forEach((s,i)=>{
+    const tr=document.createElement('tr');
+    tr.onclick=()=>jumpDemo(i);
+    tr.innerHTML=`<td>${i+1}</td><td>${s.label}</td><td style="color:rgba(255,255,255,.45);">${s.desc}</td><td style="color:var(--aaccent);">${s.t}초</td>`;
+    list.appendChild(tr);
+  });
+})();
+</script>
+</body>
+</html>
