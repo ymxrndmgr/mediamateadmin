@@ -536,8 +536,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--dark);overflow:hid
 <!-- DEMO OVERLAY -->
 <div class="ademo-ov" id="ademo-ov">
   <div class="ademo-hl" id="ademo-hl"></div>
-
-  <!-- 일반 카드 (전체) -->
   <div class="ademo-card" id="ademo-card">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
       <div class="ademo-robot">🤖</div>
@@ -545,10 +543,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--dark);overflow:hid
         <div style="font-size:9px;color:var(--gray);font-weight:600;">AI Media Mate · 관리자 시연</div>
         <div id="ademo-label" style="font-size:11px;color:var(--acc);font-weight:700;"></div>
       </div>
-      <div style="margin-left:auto;display:flex;gap:5px;">
-        <button onclick="minimizeDemo()" title="최소화" style="background:var(--lgray);border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;color:var(--gray);font-family:var(--font);display:flex;align-items:center;justify-content:center;">⊟</button>
-        <button onclick="closeDemo()" title="닫기" style="background:var(--lgray);border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:11px;color:var(--gray);font-family:var(--font);display:flex;align-items:center;justify-content:center;">✕</button>
-      </div>
+      <button onclick="closeDemo()" style="margin-left:auto;background:var(--lgray);border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:11px;color:var(--gray);font-family:var(--font);">✕</button>
     </div>
     <div class="ademo-txt" id="ademo-txt"></div>
     <div style="display:flex;align-items:center;gap:7px;margin-top:12px;">
@@ -558,16 +553,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--dark);overflow:hid
       <div class="ademo-track" style="flex:1;margin-top:0;" onclick="seekDemo(event)"><div class="ademo-fill" id="ademo-fill"></div></div>
     </div>
     <div class="ademo-timer" id="ademo-timer">0초 / 180초</div>
-  </div>
-
-  <!-- 최소화 카드 (우측 상단 고정) -->
-  <div id="ademo-mini" style="display:none;position:fixed;top:16px;right:16px;z-index:202;background:#fff;border:1px solid var(--border);border-radius:30px;padding:6px 10px;box-shadow:0 4px 18px rgba(15,31,61,.18);display:none;align-items:center;gap:6px;">
-    <div style="width:24px;height:24px;background:var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🤖</div>
-    <button id="btn-play-m"  onclick="demoPlay()"  style="width:24px;height:24px;border:none;border-radius:50%;background:var(--acc);color:#fff;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">▶</button>
-    <button id="btn-pause-m" onclick="demoPause()" style="width:24px;height:24px;border:none;border-radius:50%;background:var(--border);color:var(--dark);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏸</button>
-    <button id="btn-stop-m"  onclick="demoStop()"  style="width:24px;height:24px;border:none;border-radius:50%;background:var(--border);color:var(--dark);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⏹</button>
-    <button onclick="maximizeDemo()" title="원래 크기로" style="width:24px;height:24px;background:var(--lgray);border:none;border-radius:50%;cursor:pointer;font-size:13px;color:var(--gray);display:flex;align-items:center;justify-content:center;">⊞</button>
-    <button onclick="closeDemo()" style="width:24px;height:24px;background:var(--lgray);border:none;border-radius:50%;cursor:pointer;font-size:10px;color:var(--gray);display:flex;align-items:center;justify-content:center;">✕</button>
   </div>
 </div>
 
@@ -618,35 +603,9 @@ const TOTAL=180;
 let timer=null,elapsed=0,running=false,paused=false;
 function updateBtnState(){
   const bp=document.getElementById('btn-play'),bpa=document.getElementById('btn-pause');
-  const bpm=document.getElementById('btn-play-m'),bpam=document.getElementById('btn-pause-m');
   if(!bp)return;
-  const playBg=(!running||paused)?'var(--acc)':'var(--border)';
-  const playColor=(!running||paused)?'#fff':'var(--dark)';
-  const pauseBg=(running&&!paused)?'var(--acc)':'var(--border)';
-  const pauseColor=(running&&!paused)?'#fff':'var(--dark)';
-  bp.style.background=playBg; bp.style.color=playColor;
-  bpa.style.background=pauseBg; bpa.style.color=pauseColor;
-  if(bpm){bpm.style.background=playBg; bpm.style.color=playColor;}
-  if(bpam){bpam.style.background=pauseBg; bpam.style.color=pauseColor;}
-}
-let isMinimized=false;
-function minimizeDemo(){
-  isMinimized=true;
-  document.getElementById('ademo-card').style.display='none';
-  const mini=document.getElementById('ademo-mini');
-  mini.style.display='flex';
-  document.getElementById('ademo-hl').style.opacity=0;
-  // 오버레이 배경 투명하게
-  document.getElementById('ademo-ov').style.background='transparent';
-  document.getElementById('ademo-ov').style.pointerEvents='none';
-  mini.style.pointerEvents='auto';
-}
-function maximizeDemo(){
-  isMinimized=false;
-  document.getElementById('ademo-mini').style.display='none';
-  document.getElementById('ademo-card').style.display='block';
-  document.getElementById('ademo-ov').style.background='rgba(15,31,61,.38)';
-  document.getElementById('ademo-ov').style.pointerEvents='';
+  bp.style.background=(!running||paused)?'var(--acc)':'var(--border)';bp.style.color=(!running||paused)?'#fff':'var(--dark)';
+  bpa.style.background=(running&&!paused)?'var(--acc)':'var(--border)';bpa.style.color=(running&&!paused)?'#fff':'var(--dark)';
 }
 function startDemo(){running=true;paused=false;elapsed=0;document.getElementById('ademo-ov').style.display='block';document.getElementById('ademo-fill').style.width='0%';document.getElementById('ademo-timer').textContent='0초 / 180초';updateBtnState();runStep(0);clearInterval(timer);timer=setInterval(tick,1000);}
 function tick(){if(!running||paused)return;elapsed++;document.getElementById('ademo-fill').style.width=Math.min((elapsed/TOTAL)*100,100)+'%';document.getElementById('ademo-timer').textContent=`${elapsed}초 / 180초`;const n=steps.findIndex(s=>s.t===elapsed);if(n!==-1)runStep(n);if(elapsed>=TOTAL){clearInterval(timer);running=false;updateBtnState();}}
@@ -657,7 +616,6 @@ function runStep(idx){const s=steps[idx];if(!s)return;aTab(s.tab);document.query
 function applyHL(tab,sel){
   const hl=document.getElementById('ademo-hl'),card=document.getElementById('ademo-card');
   if(!sel){hl.style.opacity=0;card.style.bottom='24px';card.style.top='auto';return;}
-  if(isMinimized){hl.style.opacity=0;return;}
   try{
     const pg=document.getElementById('apage-'+tab);
     const t=pg?pg.querySelector(sel):null;
@@ -672,16 +630,7 @@ function applyHL(tab,sel){
     else{card.style.top='auto';card.style.bottom='24px';}
   }catch(e){hl.style.opacity=0;}
 }
-function closeDemo(){
-  running=false;clearInterval(timer);
-  isMinimized=false;
-  document.getElementById('ademo-ov').style.display='none';
-  document.getElementById('ademo-ov').style.background='rgba(15,31,61,.38)';
-  document.getElementById('ademo-ov').style.pointerEvents='';
-  document.getElementById('ademo-card').style.display='block';
-  document.getElementById('ademo-mini').style.display='none';
-  document.getElementById('ademo-hl').style.opacity=0;
-}
+function closeDemo(){running=false;clearInterval(timer);document.getElementById('ademo-ov').style.display='none';document.getElementById('ademo-hl').style.opacity=0;}
 function seekDemo(e){const r=Math.min(Math.max(e.offsetX/e.currentTarget.offsetWidth,0),1);elapsed=Math.floor(r*TOTAL);document.getElementById('ademo-fill').style.width=(r*100)+'%';document.getElementById('ademo-timer').textContent=`${elapsed}초 / 180초`;let si=0;for(let i=0;i<steps.length;i++)if(steps[i].t<=elapsed)si=i;runStep(si);}
 function jumpDemo(idx){if(!running)startDemo();setTimeout(()=>{elapsed=steps[idx]?.t||0;runStep(idx);},180);}
 
